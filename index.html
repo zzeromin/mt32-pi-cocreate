@@ -597,9 +597,17 @@
         // 모바일용 이미지 토글 기능
         document.querySelectorAll('.preview-trigger').forEach(trigger => {
             trigger.addEventListener('click', function (e) {
-                // PC 호버와 충돌 방지를 위해 모바일 환경(터치)에서만 주로 작동하도록 함
+                // PC 호버와 충돌 방지를 위해 모바일 환경(터치)에서만 작동
                 if (window.innerWidth <= 768) {
+                    // 체크박스 자체를 클릭한 경우는 토글하지 않음 (브라우저 기본 동작에 맡김)
+                    if (e.target.type === 'checkbox') return;
+
+                    e.preventDefault(); // 라벨 클릭 시 체크박스가 같이 클릭되는 경우 방지
                     this.classList.toggle('show-mobile-preview');
+
+                    // 만약 체크박스도 같이 토글하고 싶다면 아래 주석 해제
+                    // const cb = this.querySelector('input[type="checkbox"]');
+                    // if(cb) { cb.checked = !cb.checked; calculateTotal(); }
                 }
             });
         });
