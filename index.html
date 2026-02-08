@@ -247,14 +247,27 @@
 
             .preview-trigger {
                 display: block !important;
-                text-align: center;
+                text-align: left !important;
+                /* 기본 왼쪽 정렬로 복구 */
             }
 
             .checkbox-group.preview-trigger {
                 display: flex !important;
-                flex-direction: column;
+                flex-direction: row !important;
+                /* 가로 배열 유지 */
+                flex-wrap: wrap;
+                /* 이미지가 아래로 내려오게 함 */
                 align-items: center;
-                text-align: center;
+                text-align: left;
+            }
+
+            .checkbox-group.preview-trigger input {
+                margin-right: 12px;
+            }
+
+            .checkbox-group.preview-trigger label {
+                flex: 1;
+                margin-bottom: 0;
             }
         }
 
