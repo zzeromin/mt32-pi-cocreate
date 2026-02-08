@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MT32-Pi 공제 신청</title>
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --bg-color: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --text-color: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+            --accent-glow: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-container img {
+            max-width: 400px;
+            width: 100%;
+            height: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px;
+            background-color: #222222;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px var(--accent-glow);
+            background-color: #2a2a2a;
+        }
+
+        .helper-text {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            background: #222222;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .checkbox-group input {
+            width: auto;
+            margin-right: 12px;
+            cursor: pointer;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: #000000;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        /* 이미지 미리보기 스타일 */
+        .preview-trigger {
+            position: relative;
+        }
+
+        .preview-image {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 15px);
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            width: 280px;
+            height: auto;
+            border-radius: 12px;
+            border: 1px solid #555;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
+            background: #1a1a1a;
+            pointer-events: none;
+            animation: previewFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .preview-trigger:hover .preview-image,
+        .preview-trigger:active .preview-image {
+            display: block;
+        }
+
+        @keyframes previewFadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .hover-hint {
+            font-size: 11px;
+            color: #ffeb3b;
+            background: rgba(255, 235, 59, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        #searchAddressBtn {
+            background-color: #333333;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        #searchAddressBtn:hover {
+            background-color: #444444;
+        }
+
+        /* 모바일 대응: 터치로 열고 닫기 */
+        @media (max-width: 768px) {
+            .preview-image {
+                position: relative !important;
+                display: none !important;
+                /* 기본적으로 숨김 */
+                bottom: auto !important;
+                top: auto !important;
+                left: auto !important;
+                transform: none !important;
+                width: 100% !important;
+                max-width: 250px !important;
+                margin: 10px auto !important;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3) !important;
+                border: 1px solid #444 !important;
+                background: #1a1a1a !important;
+                animation: slideDown 0.3s ease-out !important;
+            }
+
+            /* 이 클래스가 붙을 때만 모바일에서 표시 */
+            .show-mobile-preview .preview-image {
+                display: block !important;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            .hover-hint {
+                background: rgba(77, 166, 255, 0.2);
+                color: #4da6ff;
+            }
+
+            .preview-trigger {
+                display: block !important;
+                text-align: center;
+            }
+
+            .checkbox-group.preview-trigger {
+                display: flex !important;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+
+        button:disabled {
+            background-color: #444444;
+            color: #888888;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Select box arrow fix for dark theme */
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23aaaaaa' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            appearance: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="logo.png" alt="MT32-Pi Logo">
+        </div>
+        <h1>공동제작 신청서</h1>
+        <div style="text-align: center; margin-top: -20px; margin-bottom: 35px;">
+            <div style="color: #ffeb3b; font-size: 15px; font-weight: 600; margin-bottom: 8px;">
+                최상의 퀄리티 유지를 위해 1차분 20세트 한정 선착순 제작
+            </div>
+            <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 10px;">
+                신청 기간: ~ 2026. 02. 15 (선착순 마감) | <a href="check.html"
+                    style="color: #aaa; text-decoration: underline;">이미 신청하셨나요?</a>
+            </div>
+            <div style="font-size: 13px;">
+                <a href="https://cafe.naver.com/raspigamer" target="_blank"
+                    style="color: #4da6ff; text-decoration: none; font-weight: 600;">📘 라즈겜동 공동제작 안내 공지 보러가기</a>
+            </div>
+        </div>
+        <div id="successView" style="display: none; text-align: center; animation: fadeIn 0.5s ease;">
+            <div style="font-size: 60px; margin-bottom: 20px;">🎉</div>
+            <h2 style="color: #fff; margin-bottom: 10px;">신청이 완료되었습니다!</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">아래 입금 정보를 확인하여 기한 내 입금해 주세요.</p>
+
+            <div
+                style="background: #222; border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 30px; text-align: left;">
+                <div style="margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                    <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">신청자 명</div>
+                    <div style="font-size: 18px; font-weight: 700; color: #fff;"><span id="resName"></span>님</div>
+                </div>
+                <div style="margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 15px;">
+                    <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">입금하실 최종 금액</div>
+                    <div style="font-size: 24px; font-weight: 800; color: #fff;"><span id="resPrice"></span>원</div>
+                </div>
+                <div>
+                    <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">입금 계좌 안내</div>
+                    <div style="font-size: 16px; font-weight: 700; color: #fff; line-height: 1.5;">
+                        <span id="accountInfo">[하나은행] ***-******-***** (예금주: ***)</span>
+                    </div>
+                    <button type="button" onclick="copyAccount()"
+                        style="background: #333; color: #fff; padding: 10px 15px; font-size: 13px; margin-top: 10px; width: auto; text-transform: none;">계좌번호
+                        복사하기</button>
+                </div>
+            </div>
+
+            <button type="button" onclick="window.location.reload()" style="background: #444; color: #fff;">처음으로
+                돌아가기</button>
+            <p style="margin-top: 20px; font-size: 13px; color: #ffeb3b;">* 입금 확인 후 제작이 시작됩니다.</p>
+        </div>
+
+        <form id="gongjeForm">
+            <!-- 1. 기본 정보 -->
+            <div class="form-group">
+                <label for="name">신청자 성함</label>
+                <input type="text" id="name" required placeholder="홍길동">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">연락처</label>
+                <input type="tel" id="phone" required placeholder="010-1234-5678">
+            </div>
+
+            <!-- 2. 제품 선택 -->
+            <div class="form-group"
+                style="background: #222; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 25px;">
+                <div class="checkbox-group preview-trigger"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; cursor: help; background: #2a2a2a; border-color: #444;">
+                    <div style="flex: 1;">
+                        <div style="font-weight: 700; color: #fff; font-size: 16px;">베이직 키트 (기본 선택) <span
+                                class="hover-hint">🔍 이미지보기</span></div>
+                        <div style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">
+                            - 구성: 알루미늄 케이스 + 보드 세트 + 배송비 포함
+                        </div>
+                    </div>
+                    <div style="color: #fff; font-weight: 700; margin-left: 15px;">74,000원</div>
+                    <img src="basic.png" class="preview-image" alt="Basic Kit Preview"
+                        style="bottom: auto; top: calc(100% + 15px);">
+                </div>
+
+                <div style="border-top: 1px solid #333; padding-top: 15px;">
+                    <label style="margin-bottom: 10px;">추가 옵션 선택 <small
+                            style="color: var(--text-muted); font-weight: normal; margin-left: 5px;">(마우스를 대면 이미지가
+                            보입니다)</small></label>
+                    <div class="checkbox-group preview-trigger"
+                        style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
+                        <input type="checkbox" id="opt_pi" class="calc-trigger">
+                        <label for="opt_pi" style="margin-bottom: 0; color: #fff; flex: 1;">라즈베리파이 제로2WH
+                            (+29,900원)</label>
+                        <img src="pi.png" class="preview-image" alt="Rpi Preview">
+                    </div>
+                    <div class="checkbox-group preview-trigger"
+                        style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
+                        <input type="checkbox" id="opt_sd" class="calc-trigger">
+                        <label for="opt_sd" style="margin-bottom: 0; color: #fff; flex: 1;">샌디스크 SD카드 32GB
+                            (+9,500원)</label>
+                        <img src="sd.png" class="preview-image" alt="SD Card Preview">
+                    </div>
+                    <div class="checkbox-group preview-trigger"
+                        style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
+                        <input type="checkbox" id="opt_adapter" class="calc-trigger">
+                        <label for="opt_adapter" style="margin-bottom: 0; color: #fff; flex: 1;">5V 4A 전원 어댑터
+                            (+9,000원)</label>
+                        <img src="adapter.png" class="preview-image" alt="Adapter Preview">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 30px;">
+                <label for="quantity">수량 선택</label>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <input type="number" id="quantity" required min="1" value="1" class="calc-trigger"
+                        style="width: 100px; text-align: center;">
+                    <span style="color: var(--text-muted); font-size: 14px;">(기본 키트 74,000원 기준)</span>
+                </div>
+            </div>
+
+            <!-- 합계 금액 표시: 30-50대를 위한 차분하고 고급스러운 스타일 -->
+            <div id="totalPriceBox"
+                style="border-top: 1px solid #444; border-bottom: 1px solid #444; padding: 25px 0; margin: 35px 0; display: flex; justify-content: space-between; align-items: baseline;">
+                <div style="font-size: 15px; font-weight: 500; color: var(--text-muted);">총 입금 예정 금액</div>
+                <div style="color: #fff;">
+                    <span id="totalPriceDisplay"
+                        style="font-size: 26px; font-weight: 800; letter-spacing: -1px;">74,000</span>
+                    <span style="font-size: 18px; font-weight: 600; margin-left: 2px;">원</span>
+                </div>
+            </div>
+
+            <!-- 3. 배송 정보 -->
+            <div class="form-group">
+                <label for="address">주소</label>
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="text" id="address" required placeholder="주소 찾기를 눌러주세요" readonly
+                        style="flex: 1; margin-bottom: 0; background-color: #222; color: #fff;">
+                    <button type="button" id="searchAddressBtn"
+                        style="width: 100px; padding: 12px; margin-top: 0; font-size: 14px; background-color: #6c757d;">주소
+                        찾기</button>
+                </div>
+                <input type="text" id="address_detail" required placeholder="상세 주소 (동, 호수 등)">
+            </div>
+
+            <!-- 4. 기타 정보 -->
+            <div class="form-group">
+                <label for="depositor">입금자명 (주문자와 다를 경우)</label>
+                <input type="text" id="depositor" required placeholder="신청자와 같으면 동일하게 입력">
+            </div>
+
+            <div class="form-group">
+                <label for="memo">배송 메모 (선택)</label>
+                <input type="text" id="memo" placeholder="예: 문 앞에 두세요">
+            </div>
+
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="agreement" required>
+                <label for="agreement" style="margin-bottom: 0; font-weight: normal;">개인정보 수집 및 이용에 동의합니다.</label>
+            </div>
+
+            <button type="submit" id="submitBtn">신청하기</button>
+        </form>
+    </div>
+
+    <!-- 다음 우편번호 서비스 스크립트 -->
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        // 연락처 자동 하이픈 기능
+        document.getElementById('phone').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            if (value.length > 3 && value.length <= 7) {
+                value = value.slice(0, 3) + '-' + value.slice(3);
+            } else if (value.length > 7) {
+                value = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
+            }
+            e.target.value = value;
+        });
+
+        // 마감 기한 체크 로직 (2026-02-16 00:00:00 기준)
+        const DEADLINE = new Date('2026-02-16T00:00:00');
+        function checkDeadline() {
+            const now = new Date();
+            if (now >= DEADLINE) {
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.innerText = "신청 기간이 마감되었습니다";
+                submitBtn.style.backgroundColor = "#444";
+                submitBtn.style.color = "#888";
+            }
+        }
+        checkDeadline();
+
+        const BASE_PRICE = 74000;
+        const OPT_PI_PRICE = 29900;
+        const OPT_SD_PRICE = 9500;
+        const OPT_ADAPTER_PRICE = 9000;
+
+        function calculateTotal() {
+            let totalPerOne = BASE_PRICE;
+            if (document.getElementById('opt_pi').checked) totalPerOne += OPT_PI_PRICE;
+            if (document.getElementById('opt_sd').checked) totalPerOne += OPT_SD_PRICE;
+            if (document.getElementById('opt_adapter').checked) totalPerOne += OPT_ADAPTER_PRICE;
+
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const finalTotal = totalPerOne * quantity;
+
+            document.getElementById('totalPriceDisplay').innerText = finalTotal.toLocaleString();
+            return finalTotal;
+        }
+
+        // 실시간 금액 계산 이벤트 바인딩
+        document.querySelectorAll('.calc-trigger').forEach(el => {
+            el.addEventListener('change', calculateTotal);
+            el.addEventListener('input', calculateTotal);
+        });
+
+        // 주소 찾기 버튼 이벤트
+        document.getElementById('searchAddressBtn').addEventListener('click', function () {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    console.log("주소 데이터 수신:", data);
+                    var addr = '';
+                    if (data.userSelectedType === 'R') {
+                        addr = data.roadAddress;
+                    } else {
+                        addr = data.jibunAddress;
+                    }
+                    const fullAddr = `(${data.zonecode}) ${addr}`;
+                    document.getElementById("address").value = fullAddr;
+                    setTimeout(function () {
+                        document.getElementById("address_detail").focus();
+                    }, 100);
+                }
+            }).open();
+        });
+
+        // 계좌 복사 기능
+        function copyAccount() {
+            const accountText = "하나은행 ***-******-***** ***"; // 복사할 텍스트
+            navigator.clipboard.writeText(accountText).then(() => {
+                alert('계좌번호가 복사되었습니다.');
+            });
+        }
+
+        document.getElementById('gongjeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnText = submitBtn.innerText;
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "전송 중...";
+
+            const options = [];
+            if (document.getElementById('opt_pi').checked) options.push("라즈베리파이");
+            if (document.getElementById('opt_sd').checked) options.push("SD카드");
+            if (document.getElementById('opt_adapter').checked) options.push("어댑터");
+
+            const total = calculateTotal();
+            const formData = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                option: "베이직 키트",
+                additional_options: options.join(", ") || "없음",
+                quantity: document.getElementById('quantity').value,
+                total_price: total,
+                address: document.getElementById('address').value,
+                address_detail: document.getElementById('address_detail').value,
+                depositor: document.getElementById('depositor').value,
+                memo: document.getElementById('memo').value,
+                agreement: document.getElementById('agreement').checked
+            };
+
+            const serverUrl = "https://cocreate-backend-114168638882.asia-northeast3.run.app/submit_gongje";
+
+            fetch(serverUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // 폼 숨기고 영수증 보여주기
+                        document.getElementById('gongjeForm').style.display = 'none';
+                        document.querySelector('h1').style.display = 'none';
+                        // 기한 안내문 숨기기 (h1 바로 아래 div)
+                        const deadlineNotice = document.querySelector('h1').nextElementSibling;
+                        if (deadlineNotice) deadlineNotice.style.display = 'none';
+
+                        document.getElementById('resName').innerText = formData.name;
+                        document.getElementById('resPrice').innerText = total.toLocaleString();
+
+                        document.getElementById('successView').style.display = 'block';
+                        window.scrollTo(0, 0);
+                    } else {
+                        alert('오류가 발생했습니다: ' + data.message);
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = originalBtnText;
+                    }
+                })
+                .catch(error => {
+                    alert('서버 통신 오류! 나중에 다시 시도해 주세요.');
+                    console.error('Error:', error);
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = originalBtnText;
+                });
+        });
+
+        // 모바일용 이미지 토글 기능
+        document.querySelectorAll('.preview-trigger').forEach(trigger => {
+            trigger.addEventListener('click', function (e) {
+                // PC 호버와 충돌 방지를 위해 모바일 환경(터치)에서만 주로 작동하도록 함
+                if (window.innerWidth <= 768) {
+                    this.classList.toggle('show-mobile-preview');
+                }
+            });
+        });
+
+        // 초기 계산
+        calculateTotal();
+    </script>
+</body>
+
+</html>
