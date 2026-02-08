@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MT32-Pi 신청 확인</title>
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --bg-color: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --text-color: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+            --accent-glow: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-size: 20px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            background-color: #222;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #resultArea {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .status-card {
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .status-접수완료 {
+            background: #333;
+            color: #aaa;
+        }
+
+        .status-입금확인 {
+            background: #1b5e20;
+            color: #a5d6a7;
+        }
+
+        .status-발송완료 {
+            background: #0d47a1;
+            color: #90caf9;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="logo.png" alt="MT32-Pi Logo">
+        </div>
+        <h1>신청 및 배송 현황 조회</h1>
+
+        <div id="inputArea">
+            <div class="form-group">
+                <label>신청자 성함</label>
+                <input type="text" id="checkName" placeholder="예: 홍길동">
+            </div>
+            <div class="form-group">
+                <label>연락처 뒤 4자리</label>
+                <input type="tel" id="checkPhone" maxlength="4" placeholder="예: 5678">
+            </div>
+            <button onclick="checkStatus()" id="checkBtn">조회하기</button>
+            <a href="index.html" class="back-link">← 신청 페이지로 돌아가기</a>
+        </div>
+
+        <div id="resultArea">
+            <div id="statusList"></div>
+            <button onclick="location.reload()" style="background: #333; color: #fff; margin-top:20px;">다시 조회하기</button>
+        </div>
+    </div>
+
+    <script>
+        function checkStatus() {
+            const name = document.getElementById('checkName').value;
+            const phone4 = document.getElementById('checkPhone').value;
+            const btn = document.getElementById('checkBtn');
+
+            if (!name || !phone4) {
+                alert('정보를 모두 입력해주세요.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "조회 중...";
+
+            fetch('https://cocreate-backend-114168638882.asia-northeast3.run.app/check_status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, phone_last4: phone4 })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('statusList');
+                    const area = document.getElementById('resultArea');
+                    const input = document.getElementById('inputArea');
+
+                    list.innerHTML = '';
+
+                    if (data.results && data.results.length > 0) {
+                        data.results.forEach(item => {
+                            const card = document.createElement('div');
+                            card.className = 'status-card';
+                            card.innerHTML = `
+                            <div class="status-badge status-${item.status}">${item.status}</div>
+                            <div style="font-size: 14px; color: #aaa;">신청일: ${item.timestamp}</div>
+                            <div style="font-size: 16px; font-weight: 700; margin-top: 5px;">${item.option}</div>
+                            <div style="font-size: 15px; margin-top: 5px;">결제 예정액: ${parseInt(item.total_price).toLocaleString()}원</div>
+                        `;
+                            list.appendChild(card);
+                        });
+                    } else {
+                        list.innerHTML = '<p style="text-align:center; padding: 20px;">일치하는 신청 내역이 없습니다.</p>';
+                    }
+
+                    input.style.display = 'none';
+                    area.style.display = 'block';
+                })
+                .catch(err => {
+                    alert('조회 중 오류가 발생했습니다.');
+                    btn.disabled = false;
+                    btn.innerText = "조회하기";
+                });
+        }
+    </script>
+</body>
+
+</html>
