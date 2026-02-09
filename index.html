@@ -325,7 +325,7 @@
                 최상의 퀄리티 유지를 위해 1차분 20세트 한정 선착순 제작
             </div>
             <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 10px;">
-                신청 기간: ~ 2026. 02. 15 (선착순 마감) | <a href="check.html"
+                신청 기간: ~ 2026. 02. 10 오전 9시 (선착순 마감) | <a href="check.html"
                     style="color: #aaa; text-decoration: underline;">이미 신청하셨나요?</a>
             </div>
             <div style="font-size: 13px;">
@@ -351,7 +351,7 @@
                 <div>
                     <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 5px;">입금 계좌 안내</div>
                     <div style="font-size: 16px; font-weight: 700; color: #fff; line-height: 1.5;">
-                        <span id="accountInfo">[하나은행] ***-******-***** (예금주: ***)</span>
+                        <span id="accountInfo">정보를 불러오는 중...</span>
                     </div>
                     <button type="button" onclick="copyAccount()"
                         style="background: #333; color: #fff; padding: 10px 15px; font-size: 13px; margin-top: 10px; width: auto; text-transform: none;">계좌번호
@@ -488,8 +488,8 @@
             e.target.value = value;
         });
 
-        // 마감 기한 체크 로직 (2026-02-16 00:00:00 기준)
-        const DEADLINE = new Date('2026-02-16T00:00:00');
+        // 마감 기한 체크 로직 (2026-02-10 09:00:00 기준)
+        const DEADLINE = new Date('2026-02-10T09:00:00');
         function checkDeadline() {
             const now = new Date();
             if (now >= DEADLINE) {
@@ -547,9 +547,11 @@
         });
 
         // 계좌 복사 기능
+        let currentAccountInfo = "";
         function copyAccount() {
-            const accountText = "하나은행 ***-******-***** ***"; // 복사할 텍스트
-            navigator.clipboard.writeText(accountText).then(() => {
+            if (!currentAccountInfo) return;
+            // 계좌번호만 추출 (괄호나 은행명 제외하고 숫자 위주로 복사하고 싶으시면 정규식 사용 가능하지만, 전체 복사가 안전)
+            navigator.clipboard.writeText(currentAccountInfo).then(() => {
                 alert('계좌번호가 복사되었습니다.');
             });
         }
@@ -602,6 +604,11 @@
 
                         document.getElementById('resName').innerText = formData.name;
                         document.getElementById('resPrice').innerText = total.toLocaleString();
+
+                        if (data.account_info) {
+                            currentAccountInfo = data.account_info;
+                            document.getElementById('accountInfo').innerText = data.account_info;
+                        }
 
                         document.getElementById('successView').style.display = 'block';
                         window.scrollTo(0, 0);
