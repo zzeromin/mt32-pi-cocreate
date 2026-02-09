@@ -213,7 +213,7 @@
                             <div class="status-badge status-${item.status}">${item.status}</div>
                             <div style="font-size: 14px; color: #aaa;">신청일: ${item.timestamp}</div>
                             <div style="font-size: 16px; font-weight: 700; margin-top: 5px;">${item.option}</div>
-                            <div style="font-size: 15px; margin-top: 5px;">결제 예정액: ${parseInt(item.total_price).toLocaleString()}원</div>
+                            <div style="font-size: 15px; margin-top: 5px;">${item.status === '접수완료' ? '결제 예정액' : '입금액'}: ${parseInt(item.total_price).toLocaleString()}원</div>
                         `;
                             list.appendChild(card);
                         });
