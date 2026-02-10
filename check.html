@@ -149,6 +149,74 @@
             text-decoration: none;
             font-size: 14px;
         }
+
+        /* Timeline Styles */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #333;
+            z-index: 1;
+        }
+
+        .timeline-step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 12px;
+            height: 12px;
+            background: #333;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            border: 3px solid var(--card-bg);
+            transition: all 0.3s ease;
+        }
+
+        .step-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .timeline-step.active .step-circle {
+            background: #fff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            transform: scale(1.2);
+        }
+
+        .timeline-step.active .step-label {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .timeline-step.completed .step-circle {
+            background: #fff;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            height: 2px;
+            background: #fff;
+            z-index: 1;
+            transition: width 0.5s ease;
+        }
     </style>
 </head>
 
@@ -173,8 +241,27 @@
         </div>
 
         <div id="resultArea">
+            <div id="timelineArea"></div>
             <div id="statusList"></div>
             <button onclick="location.reload()" style="background: #333; color: #fff; margin-top:20px;">다시 조회하기</button>
+        </div>
+
+        <!-- 유용한 링크 섹션 추가 -->
+        <div style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 25px;">
+            <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 15px;">도움이 필요하신가요?</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <a href="https://cafe.naver.com/raspigamer/59338" target="_blank"
+                    style="background: #222; padding: 12px; border-radius: 8px; text-decoration: none; color: #aaa; font-size: 13px; text-align: center; border: 1px solid #333;">📘
+                    공시 사항</a>
+                <a href="https://cafe.naver.com/raspigamer" target="_blank"
+                    style="background: #222; padding: 12px; border-radius: 8px; text-decoration: none; color: #aaa; font-size: 13px; text-align: center; border: 1px solid #333;">💬
+                    커뮤니티</a>
+            </div>
+            <div style="margin-top: 10px;">
+                <a href="#"
+                    style="display: block; background: #222; padding: 12px; border-radius: 8px; text-decoration: none; color: #fff; font-size: 13px; text-align: center; border: 1px solid #444; font-weight: 600;">📖
+                    MT32-Pi 설치 및 매뉴얼 보기</a>
+            </div>
         </div>
     </div>
 
@@ -204,8 +291,38 @@
                     const input = document.getElementById('inputArea');
 
                     list.innerHTML = '';
+                    document.getElementById('timelineArea').innerHTML = '';
 
                     if (data.results && data.results.length > 0) {
+                        // Render Timeline
+                        if (data.current_stage) {
+                            const stages = ['신청/입금', '부품수급', '제작/검수', '배송시작'];
+                            const progressWidth = ((data.current_stage - 1) / (stages.length - 1)) * 80;
+
+                            let timelineHtml = `
+                                <div style="font-size: 14px; font-weight: 700; margin-bottom: 10px; color: #fff; text-align:center;">전체 공정 현황</div>
+                                <div class="timeline">
+                                    <div class="timeline-progress" style="width: ${progressWidth}%"></div>
+                            `;
+
+                            stages.forEach((stage, index) => {
+                                const stepNum = index + 1;
+                                let statusClass = '';
+                                if (stepNum < data.current_stage) statusClass = 'completed';
+                                else if (stepNum === data.current_stage) statusClass = 'active';
+
+                                timelineHtml += `
+                                    <div class="timeline-step ${statusClass}">
+                                        <div class="step-circle"></div>
+                                        <div class="step-label">${stage}</div>
+                                    </div>
+                                `;
+                            });
+
+                            timelineHtml += `</div>`;
+                            document.getElementById('timelineArea').innerHTML = timelineHtml;
+                        }
+
                         data.results.forEach(item => {
                             const card = document.createElement('div');
                             card.className = 'status-card';
@@ -214,6 +331,15 @@
                             <div style="font-size: 14px; color: #aaa;">신청일: ${item.timestamp}</div>
                             <div style="font-size: 16px; font-weight: 700; margin-top: 5px;">${item.option}</div>
                             <div style="font-size: 15px; margin-top: 5px;">${item.status === '접수완료' ? '결제 예정액' : '입금액'}: ${parseInt(item.total_price).toLocaleString()}원</div>
+                            ${item.tracking_no ? `
+                            <div style="margin-top: 10px; padding: 10px; background: #333; border-radius: 6px;">
+                                <div style="color: #aaa; font-size: 12px;">운송장 번호</div>
+                                <div style="font-size: 14px; color: #fff; font-weight: 700; margin-top: 2px;">
+                                    ${item.tracking_no}
+                                    <a href="https://search.naver.com/search.naver?query=택배조회+${item.tracking_no}" target="_blank" style="margin-left: 10px; color: #4da6ff; text-decoration: none; font-size: 12px;">[조회하기]</a>
+                                </div>
+                            </div>
+                            ` : ''}
                             ${item.status === '접수완료' && data.account_info ? `
                             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #444;">
                                 <div style="color: #aaa; font-size: 13px; margin-bottom: 5px;">입금 계좌 안내</div>

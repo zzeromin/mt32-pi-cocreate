@@ -364,6 +364,28 @@
             <p style="margin-top: 20px; font-size: 13px; color: #ffeb3b;">* 입금 확인 후 제작이 시작됩니다.</p>
         </div>
 
+        <!-- 2차 대기 신청 뷰 추가 -->
+        <div id="waitlistView" style="display: none; text-align: center; animation: fadeIn 0.5s ease;">
+            <div style="font-size: 50px; margin-bottom: 20px;">✉️</div>
+            <h2 style="color: #fff; margin-bottom: 10px;">신청이 마감되었습니다.</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">2차 제작 시 가장 먼저 연락드릴게요.<br>대기 명단에 성함과 연락처를 남겨주세요.
+            </p>
+
+            <div
+                style="background: #222; border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 30px; text-align: left;">
+                <div class="form-group">
+                    <label>성함 및 닉네임</label>
+                    <input type="text" id="waitName" placeholder="홍길동">
+                </div>
+                <div class="form-group">
+                    <label>연락처</label>
+                    <input type="tel" id="waitPhone" placeholder="010-1234-5678">
+                </div>
+                <button type="button" onclick="submitWaitlist()" id="waitBtn" style="background: #fff; color: #000;">2차
+                    제작 알림 받기</button>
+            </div>
+        </div>
+
         <form id="gongjeForm">
             <!-- 1. 기본 정보 -->
             <div class="form-group">
@@ -472,6 +494,44 @@
 
             <button type="submit" id="submitBtn">신청하기</button>
         </form>
+
+        <!-- 제작 과정 갤러리 섹션 추가 -->
+        <div id="gallerySection"
+            style="margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 40px;">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h3 style="color: #fff; margin-bottom: 8px; font-size: 18px;">제작 진행 현황</h3>
+                <p style="color: var(--text-muted); font-size: 13px;">최고의 퀄리티를 위해 세심하게 제작하고 있습니다.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <!-- 나중에 실제 제작 사진으로 교체하세요 (예: basic.png 대신 photo1.jpg) -->
+                <div
+                    style="aspect-ratio: 1/1; background: #222; border-radius: 12px; overflow: hidden; border: 1px solid #333;">
+                    <img src="basic.png" alt="Process 1"
+                        style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;">
+                </div>
+                <div
+                    style="aspect-ratio: 1/1; background: #222; border-radius: 12px; overflow: hidden; border: 1px solid #333;">
+                    <img src="pi.png" alt="Process 2"
+                        style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;">
+                </div>
+                <div
+                    style="aspect-ratio: 1/1; background: #222; border-radius: 12px; overflow: hidden; border: 1px solid #333;">
+                    <img src="logo.png" alt="Process 3"
+                        style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4; padding: 20px; box-sizing: border-box;">
+                </div>
+                <div
+                    style="aspect-ratio: 1/1; background: #222; border-radius: 12px; overflow: hidden; border: 1px solid #333; display: flex; align-items: center; justify-content: center;">
+                    <span style="color: #444; font-size: 11px;">Coming Soon</span>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 25px;">
+                <a href="https://cafe.naver.com/raspigamer/59338" target="_blank"
+                    style="color: #aaa; text-decoration: none; font-size: 12px; border: 1px solid #444; padding: 8px 15px; border-radius: 20px;">제작기
+                    더 보러가기 →</a>
+            </div>
+        </div>
     </div>
 
     <!-- 다음 우편번호 서비스 스크립트 -->
@@ -493,11 +553,13 @@
         function checkDeadline() {
             const now = new Date();
             if (now >= DEADLINE) {
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = true;
-                submitBtn.innerText = "신청 기간이 마감되었습니다";
-                submitBtn.style.backgroundColor = "#444";
-                submitBtn.style.color = "#888";
+                // 신청 폼 숨기고 대기자 명단 폼 보이기
+                document.getElementById('gongjeForm').style.display = 'none';
+                document.getElementById('waitlistView').style.display = 'block';
+
+                // 마감 안내 텍스트 변경
+                const deadlineText = document.querySelector('div[style*="color: var(--text-muted)"]');
+                if (deadlineText) deadlineText.innerHTML = '신청 기간이 마감되었습니다. (02. 10 09시 종료)';
             }
         }
         checkDeadline();
@@ -643,6 +705,43 @@
                 }
             });
         });
+
+        // 대기 명단 신청 함수
+        function submitWaitlist() {
+            const name = document.getElementById('waitName').value;
+            const phone = document.getElementById('waitPhone').value;
+            const btn = document.getElementById('waitBtn');
+
+            if (!name || !phone) {
+                alert('성함과 연락처를 입력해 주세요.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "신청 중...";
+
+            fetch('https://cocreate-backend-114168638882.asia-northeast3.run.app/submit_waitlist', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, phone: phone })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert('오류: ' + data.message);
+                        btn.disabled = false;
+                        btn.innerText = "2차 제작 알림 받기";
+                    }
+                })
+                .catch(err => {
+                    alert('통신 오류가 발생했습니다.');
+                    btn.disabled = false;
+                    btn.innerText = "2차 제작 알림 받기";
+                });
+        }
 
         // 초기 계산
         calculateTotal();
