@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoCreate 관리자 모드</title>
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --card-bg: #1a1a1a;
+            --text-color: #ffffff;
+            --accent: #4da6ff;
+            --border: #333;
+        }
+
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .section {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .login-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        input {
+            padding: 12px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        .stage-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #2a2a2a;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        button.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            color: #888;
+            padding: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .st-접수완료 {
+            background: #444;
+            color: #ccc;
+        }
+
+        .st-입금확인 {
+            background: #1b5e20;
+            color: #a5d6a7;
+        }
+
+        .st-발송완료 {
+            background: #0d47a1;
+            color: #90caf9;
+        }
+
+        .wait-badge {
+            background: #ffeb3b;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 800;
+            margin-left: 10px;
+        }
+
+        .tracking-input {
+            width: 100px;
+            font-size: 12px;
+            padding: 5px;
+            margin-right: 5px;
+        }
+
+        .refresh-btn {
+            background: #333;
+            padding: 8px 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 style="text-align: center; margin-bottom: 30px; font-size: 24px; letter-spacing: -1px;">🛠️ CoCreate 관리자 페이지
+        </h1>
+        <div class="login-bar">
+            <input type="password" id="adminPwd" placeholder="관리자 비밀번호">
+            <button onclick="loadData()" class="refresh-btn">데이터 불러오기 / 새로고침</button>
+        </div>
+
+        <div class="section">
+            <h2>0. 모집 상태 제어 (index.html)</h2>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="toggleRecruitment(true)" id="btnOpen" style="flex:1;">🟢 모집 시작</button>
+                <button onclick="toggleRecruitment(false)" id="btnClosed" style="flex:1;">🔴 모집 마감</button>
+            </div>
+            <p style="font-size: 11px; color: #666; margin-top: 10px; text-align: center;">'모집 마감' 선택 시 신청 폼 대신 대기 명단 폼이
+                나타납니다.</p>
+        </div>
+
+        <div class="section">
+            <h2>1. 제작 공정 단계 제어 (check.html)</h2>
+            <div class="stage-buttons">
+                <button onclick="setStage(1)" id="stage1">1. 신청/입금</button>
+                <button onclick="setStage(2)" id="stage2">2. 부품수급</button>
+                <button onclick="setStage(3)" id="stage3">3. 제작/검수</button>
+                <button onclick="setStage(4)" id="stage4">4. 배송시작</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin-bottom:0;">2. 신청자 관리</h2>
+                <div>2차 대기 인원: <span id="waitCount" class="wait-badge">0</span>명</div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>신청일</th>
+                            <th>성함/닉네임</th>
+                            <th>옵션</th>
+                            <th>상태 (클릭 시 변경)</th>
+                            <th>송장번호</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataBody">
+                        <tr>
+                            <td colspan="5" style="text-align:center; padding: 40px; color:#666;">데이터를 불러와 주세요.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://cocreate-backend-114168638882.asia-northeast3.run.app';
+
+        function loadData() {
+            const pwd = document.getElementById('adminPwd').value;
+            if (!pwd) return alert('비밀번호를 입력하세요.');
+
+            fetch(`${API_BASE}/admin/get_all_data`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pwd })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        renderTable(data.data);
+                        document.getElementById('waitCount').innerText = data.wait_count;
+                        updateRecruitButtons(data.is_open);
+                        if (data.stage) {
+                            updateStageButtons(data.stage);
+                        }
+                    } else {
+                        alert(data.message);
+                    }
+                });
+        }
+
+        function renderTable(list) {
+            const body = document.getElementById('dataBody');
+            body.innerHTML = '';
+            list.reverse().forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color:#666; font-size:11px;">${item['신청일시']}</td>
+                    <td style="font-weight:700;">${item['성함']}</td>
+                    <td>${item['기본옵션']}</td>
+                    <td>
+                        <span class="status-badge st-${item['상태']}" onclick="toggleStatus(${item.row_num}, '${item['상태']}')">
+                            ${item['상태']}
+                        </span>
+                    </td>
+                    <td>
+                        <input type="text" class="tracking-input" id="tr_${item.row_num}" value="${item['송장번호'] || ''}">
+                        <button onclick="updateTracking(${item.row_num})" style="padding: 5px 8px; font-size:11px;">저장</button>
+                    </td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        function toggleStatus(rowNum, currentStatus) {
+            let nextStatus = '';
+            if (currentStatus === '접수완료') nextStatus = '입금확인';
+            else if (currentStatus === '입금확인') nextStatus = '발송완료';
+            else nextStatus = '접수완료';
+
+            if (!confirm(`상태를 [${nextStatus}]으로 변경하시겠습니까?`)) return;
+
+            updateRecord(rowNum, { status: nextStatus });
+        }
+
+        function updateTracking(rowNum) {
+            const val = document.getElementById('tr_' + rowNum).value;
+            updateRecord(rowNum, { tracking_no: val });
+        }
+
+        function updateRecord(rowNum, payload) {
+            const pwd = document.getElementById('adminPwd').value;
+            payload.password = pwd;
+            payload.row_num = rowNum;
+
+            fetch(`${API_BASE}/admin/update_record`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('변경되었습니다.');
+                        loadData();
+                    } else {
+                        alert(data.message);
+                    }
+                });
+        }
+
+        function toggleRecruitment(isOpen) {
+            const pwd = document.getElementById('adminPwd').value;
+            if (!confirm(`모집 상태를 [${isOpen ? '시작' : '마감'}]으로 변경하시겠습니까?`)) return;
+
+            fetch(`${API_BASE}/admin/toggle_recruitment`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pwd, is_open: isOpen })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    updateRecruitButtons(isOpen);
+                });
+        }
+
+        function updateRecruitButtons(isOpen) {
+            document.getElementById('btnOpen').classList.toggle('active', isOpen);
+            document.getElementById('btnClosed').classList.toggle('active', !isOpen);
+        }
+
+        function setStage(stage) {
+            const pwd = document.getElementById('adminPwd').value;
+            if (!confirm(`공정 단계를 ${stage}단계로 변경하시겠습니까?`)) return;
+
+            fetch(`${API_BASE}/admin/update_stage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pwd, stage: stage })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    updateStageButtons(stage);
+                });
+        }
+
+        function updateStageButtons(stage) {
+            document.querySelectorAll('.stage-buttons button').forEach(b => b.classList.remove('active'));
+            document.getElementById('stage' + stage).classList.add('active');
+        }
+    </script>
+</body>
+
+</html>
