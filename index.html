@@ -373,6 +373,14 @@
 
             <div
                 style="background: #222; border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 30px; text-align: left;">
+
+                <div
+                    style="background: rgba(255, 235, 59, 0.1); border: 1px solid rgba(255, 235, 59, 0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center;">
+                    <div style="color: #ffeb3b; font-size: 13px; margin-bottom: 5px;">현재 2차 제작 대기 현황</div>
+                    <div style="font-size: 18px; font-weight: 800; color: #fff;">지금 <span id="waitCountDisplay"
+                            style="color: #ffeb3b; font-size: 26px;">0</span>명이 줄 서고 있습니다!</div>
+                </div>
+
                 <div class="form-group">
                     <label>성함 및 닉네임</label>
                     <input type="text" id="waitName" placeholder="홍길동">
@@ -554,6 +562,11 @@
                 const data = await res.json();
 
                 if (data.status === 'success') {
+                    if (data.wait_count !== undefined) {
+                        const display = document.getElementById('waitCountDisplay');
+                        if (display) display.innerText = data.wait_count;
+                    }
+
                     if (data.is_open) {
                         document.getElementById('gongjeForm').style.display = 'block';
                         document.getElementById('waitlistView').style.display = 'none';
