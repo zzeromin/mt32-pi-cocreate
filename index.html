@@ -206,6 +206,24 @@
             }
         }
 
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .hover-hint {
             font-size: 11px;
             color: #ffeb3b;
@@ -333,6 +351,15 @@
                     style="color: #4da6ff; text-decoration: none; font-weight: 600;">📘 라즈겜동 공동제작 안내 공지 보러가기</a>
             </div>
         </div>
+
+        <!-- 로딩 뷰 추가 -->
+        <div id="loadingView" style="text-align: center; padding: 100px 0;">
+            <div class="loading-spinner"
+                style="border: 3px solid #333; border-top: 3px solid #fff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;">
+            </div>
+            <p style="color: var(--text-muted); font-size: 14px;">설정을 불러오는 중입니다...</p>
+        </div>
+
         <div id="successView" style="display: none; text-align: center; animation: fadeIn 0.5s ease;">
             <div style="font-size: 60px; margin-bottom: 20px;">🎉</div>
             <h2 style="color: #fff; margin-bottom: 10px;">신청이 완료되었습니다!</h2>
@@ -394,7 +421,7 @@
             </div>
         </div>
 
-        <form id="gongjeForm">
+        <form id="gongjeForm" style="display: none;">
             <!-- 1. 기본 정보 -->
             <div class="form-group">
                 <label for="name">신청자 성함 및 닉네임</label>
@@ -561,6 +588,9 @@
                 const res = await fetch('https://cocreate-backend-114168638882.asia-northeast3.run.app/get_recruitment_status');
                 const data = await res.json();
 
+                // 로딩 뷰 숨기기
+                document.getElementById('loadingView').style.display = 'none';
+
                 if (data.status === 'success') {
                     if (data.wait_count !== undefined) {
                         const display = document.getElementById('waitCountDisplay');
@@ -581,6 +611,7 @@
                 }
             } catch (err) {
                 console.error('상태 확인 실패:', err);
+                document.getElementById('loadingView').innerHTML = '<p style="color: #ff4d4d;">서버와 통신 중 오류가 발생했습니다. 다시 시도해 주세요.</p>';
             }
         }
         checkRecruitmentStatus();
