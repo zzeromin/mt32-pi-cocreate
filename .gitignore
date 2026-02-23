@@ -5,3 +5,6 @@ desktop.ini
 
 # Logs
 *.log
+
+# Admin page (should not be public)
+admin.html
