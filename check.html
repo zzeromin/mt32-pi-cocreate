@@ -268,6 +268,17 @@
     <script>
         const API_BASE = "https://cocreate-backend-114168638882.asia-northeast3.run.app";
 
+        // XSS 방지용 HTML 이스케이핑 함수
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         function renderTimeline(currentStage) {
             if (!currentStage) return '';
             const stages = ['신청/입금', '부품수급', '제작/검수', '배송시작'];
@@ -298,28 +309,35 @@
         }
 
         function renderStatusCard(item, accountInfo) {
+            const safeStatus = escapeHtml(item.status);
+            const safeTimestamp = escapeHtml(item.timestamp);
+            const safeOption = escapeHtml(item.option);
+            const safeTotalPrice = parseInt(item.total_price, 10) || 0;
+            const safeTrackingNo = escapeHtml(item.tracking_no);
+            const safeAccountInfo = escapeHtml(accountInfo);
+
             return `
                 <div class="status-card">
-                    <div class="status-badge status-${item.status}">${item.status}</div>
-                    <div style="font-size: 13px; color: #888;">신청일: ${item.timestamp}</div>
-                    <div style="font-size: 16px; font-weight: 700; margin-top: 8px;">${item.option}</div>
-                    <div style="font-size: 15px; margin-top: 5px;">${item.status === '접수완료' ? '결제 예정액' : '입금액'}: <span style="color:#fff; font-weight:700;">${parseInt(item.total_price).toLocaleString()}원</span></div>
+                    <div class="status-badge status-${safeStatus}">${safeStatus}</div>
+                    <div style="font-size: 13px; color: #888;">신청일: ${safeTimestamp}</div>
+                    <div style="font-size: 16px; font-weight: 700; margin-top: 8px;">${safeOption}</div>
+                    <div style="font-size: 15px; margin-top: 5px;">${safeStatus === '접수완료' ? '결제 예정액' : '입금액'}: <span style="color:#fff; font-weight:700;">${safeTotalPrice.toLocaleString()}원</span></div>
                     
-                    ${item.tracking_no ? `
+                    ${safeTrackingNo ? `
                     <div style="margin-top: 15px; padding: 12px; background: #333; border-radius: 8px; border: 1px solid #444;">
                         <div style="color: #aaa; font-size: 11px; margin-bottom:3px;">운송장 번호</div>
                         <div style="font-size: 14px; color: #fff; font-weight: 700; display:flex; justify-content:space-between; align-items:center;">
-                            ${item.tracking_no}
-                            <a href="https://search.naver.com/search.naver?query=택배조회+${item.tracking_no}" target="_blank" style="color: #4da6ff; text-decoration: none; font-size: 12px; background: rgba(77,166,255,0.1); padding: 4px 8px; border-radius: 4px;">조회하기</a>
+                            ${safeTrackingNo}
+                            <a href="https://search.naver.com/search.naver?query=택배조회+${encodeURIComponent(item.tracking_no)}" target="_blank" rel="noopener noreferrer" style="color: #4da6ff; text-decoration: none; font-size: 12px; background: rgba(77,166,255,0.1); padding: 4px 8px; border-radius: 4px;">조회하기</a>
                         </div>
                     </div>
                     ` : ''}
 
-                    ${item.status === '접수완료' && accountInfo ? `
+                    ${safeStatus === '접수완료' && safeAccountInfo ? `
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
                         <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">입금 계좌 안내</div>
-                        <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom:10px;">${accountInfo}</div>
-                        <button onclick="copyAccount('${accountInfo}')" style="width: auto; padding: 8px 15px; font-size: 12px; background: #444; color: #fff; border-radius:6px;">계좌번호 복사</button>
+                        <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom:10px;">${safeAccountInfo}</div>
+                        <button onclick="copyAccount('${safeAccountInfo}')" style="width: auto; padding: 8px 15px; font-size: 12px; background: #444; color: #fff; border-radius:6px;">계좌번호 복사</button>
                     </div>
                     ` : ''}
                 </div>
