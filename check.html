@@ -323,15 +323,29 @@
                     <div style="font-size: 16px; font-weight: 700; margin-top: 8px;">${safeOption}</div>
                     <div style="font-size: 15px; margin-top: 5px;">${safeStatus === '접수완료' ? '결제 예정액' : '입금액'}: <span style="color:#fff; font-weight:700;">${safeTotalPrice.toLocaleString()}원</span></div>
                     
-                    ${safeTrackingNo ? `
-                    <div style="margin-top: 15px; padding: 12px; background: #333; border-radius: 8px; border: 1px solid #444;">
-                        <div style="color: #aaa; font-size: 11px; margin-bottom:3px;">운송장 번호</div>
-                        <div style="font-size: 14px; color: #fff; font-weight: 700; display:flex; justify-content:space-between; align-items:center;">
-                            ${safeTrackingNo}
-                            <a href="https://search.naver.com/search.naver?query=택배조회+${encodeURIComponent(item.tracking_no)}" target="_blank" rel="noopener noreferrer" style="color: #4da6ff; text-decoration: none; font-size: 12px; background: rgba(77,166,255,0.1); padding: 4px 8px; border-radius: 4px;">조회하기</a>
+                    ${safeTrackingNo ? (function () {
+                    // "택배사 번호" 형식 분리 시도
+                    const parts = safeTrackingNo.split(' ');
+                    let courier = '';
+                    let number = safeTrackingNo;
+
+                    // 알려진 택배사 목록
+                    const couriers = ['CJ대한통운', '우체국택배', '한진택배', '롯데택배', '로젠택배'];
+                    if (parts.length > 1 && couriers.includes(parts[0])) {
+                        courier = parts[0];
+                        number = parts.slice(1).join(' ');
+                    }
+
+                    return `
+                        <div style="margin-top: 15px; padding: 12px; background: #333; border-radius: 8px; border: 1px solid #444;">
+                            <div style="color: #aaa; font-size: 11px; margin-bottom:3px;">${courier ? courier : '운송장'} 번호</div>
+                            <div style="font-size: 14px; color: #fff; font-weight: 700; display:flex; justify-content:space-between; align-items:center;">
+                                ${number}
+                                <a href="https://search.naver.com/search.naver?query=${encodeURIComponent('택배조회 ' + safeTrackingNo)}" target="_blank" rel="noopener noreferrer" style="color: #4da6ff; text-decoration: none; font-size: 12px; background: rgba(77,166,255,0.1); padding: 4px 8px; border-radius: 4px;">조회하기</a>
+                            </div>
                         </div>
-                    </div>
-                    ` : ''}
+                        `;
+                })() : ''}
 
                     ${safeStatus === '접수완료' && safeAccountInfo ? `
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
