@@ -341,7 +341,7 @@
                             <div style="color: #aaa; font-size: 11px; margin-bottom:3px;">${courier ? courier : '운송장'} 번호</div>
                             <div style="font-size: 14px; color: #fff; font-weight: 700; display:flex; justify-content:space-between; align-items:center;">
                                 ${number}
-                                <a href="https://search.naver.com/search.naver?query=${encodeURIComponent('택배조회 ' + safeTrackingNo)}" target="_blank" rel="noopener noreferrer" style="color: #4da6ff; text-decoration: none; font-size: 12px; background: rgba(77,166,255,0.1); padding: 4px 8px; border-radius: 4px;">조회하기</a>
+                                <a href="https://search.naver.com/search.naver?query=${encodeURIComponent(safeTrackingNo)}" target="_blank" rel="noopener noreferrer" style="color: #4da6ff; text-decoration: none; font-size: 12px; background: rgba(77,166,255,0.1); padding: 4px 8px; border-radius: 4px;">조회하기</a>
                             </div>
                         </div>
                         `;
