@@ -212,16 +212,88 @@
             }
         }
 
+        /* 애니메이션 */
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translateY(20px);
             }
 
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        /* 컨펌 모달 스타일 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: var(--accent);
+        }
+
+        .confirm-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #2a2a2a;
+            font-size: 14px;
+        }
+
+        .confirm-label {
+            color: #888;
+            flex-shrink: 0;
+        }
+
+        .confirm-value {
+            color: #fff;
+            font-weight: 600;
+            text-align: right;
+            word-break: break-all;
+            margin-left: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .modal-footer button {
+            flex: 1;
+            margin: 0;
         }
 
         .hover-hint {
@@ -368,9 +440,9 @@
 <body>
     <div class="container">
         <div class="logo-container">
-            <img src="logo.png" alt="MT32-Pi Logo">
+            <img src="logo.png" alt="MT32-Pi 로고">
         </div>
-        <h1>공동제작 신청서</h1>
+        <h1><span id="displayRound"></span>차 공동제작 신청서</h1>
         <div style="text-align: center; margin-top: -20px; margin-bottom: 35px;">
             <div style="color: #ffeb3b; font-size: 15px; font-weight: 600; margin-bottom: 8px;">
                 최상의 퀄리티 유지를 위해 1차분 20세트 한정 선착순 제작
@@ -429,208 +501,256 @@
             <div style="font-size: 50px; margin-bottom: 20px;">✉️</div>
             <h2 style="color: #fff; margin-bottom: 10px;">신청이 마감되었습니다.</h2>
             <p style="color: var(--text-muted); margin-bottom: 30px;">2차 제작 시 가장 먼저 연락드릴게요.<br>대기 명단에 성함과 연락처를 남겨주세요.
-            </p>
+            <div id="waitlistView" style="display: none;">
+                <div class="wait-card"
+                    style="background: #222; border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 30px; text-align: left;">
+                    <div class="wait-status"
+                        style="background: rgba(255, 235, 59, 0.1); border: 1px solid rgba(255, 235, 59, 0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center;">
+                        <div style="font-size: 16px; margin-bottom: 5px;"><span id="waitDisplayRound"></span>차 모집은
+                            마감되었습니다.</div>
+                        <div style="font-size: 14px; opacity: 0.9;">현재 <span id="waitCount"
+                                style="color: #ffeb3b; font-size: 26px;">0</span>명이 줄 서고 있습니다!</div>
+                    </div>
 
-            <div
-                style="background: #222; border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 30px; text-align: left;">
-                <div
-                    style="background: rgba(255, 235, 59, 0.1); border: 1px solid rgba(255, 235, 59, 0.3); padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center;">
-                    <div style="color: #ffeb3b; font-size: 13px; margin-bottom: 5px;">현재 2차 제작 대기 현황</div>
-                    <div style="font-size: 18px; font-weight: 800; color: #fff;">지금 <span id="waitCountDisplay"
-                            style="color: #ffeb3b; font-size: 26px;">0</span>명이 줄 서고 있습니다!</div>
-                </div>
-
-                <div class="form-group">
-                    <label>성함 및 닉네임</label>
-                    <input type="text" id="waitName" placeholder="홍길동">
-                </div>
-                <div class="form-group">
-                    <label>연락처</label>
-                    <input type="tel" id="waitPhone" placeholder="010-1234-5678">
-                </div>
-                <button type="button" onclick="submitWaitlist()" id="waitBtn" style="background: #fff; color: #000;">2차
-                    제작 알림 받기</button>
-            </div>
-        </div>
-
-        <!-- 최종 마감 뷰 추가 -->
-        <div id="fullyClosedView" style="display: none; text-align: center; animation: fadeIn 0.5s ease;">
-            <div style="font-size: 50px; margin-bottom: 20px;">🔒</div>
-            <h2 style="color: #fff; margin-bottom: 10px;">모든 신청이 종료되었습니다.</h2>
-            <p style="color: var(--text-muted); margin-bottom: 30px;">준비된 물량이 모두 소진되어<br>1차 및 대기 명단 접수를 마감하였습니다.
-            </p>
-            <div
-                style="background: #222; border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 30px;">
-                <p style="color: #fff; font-size: 15px;">뜨거운 성원에 감사드립니다.<br>다음 제작 일정은 커뮤니티를 통해 확인해 주세요.</p>
-                <div style="margin-top: 20px;">
-                    <a href="https://cafe.naver.com/raspigamer/59338" target="_blank"
-                        style="color: #4da6ff; text-decoration: none; font-weight: 600;">라즈겜동 카페 바로가기</a>
-                </div>
-            </div>
-            <a href="check.html" style="color: var(--text-muted); text-decoration: underline; font-size: 14px;">이미
-                신청하셨나요? 신청 현황 확인하기</a>
-        </div>
-
-        <form id="gongjeForm" style="display: none;">
-            <!-- 1. 기본 정보 -->
-            <div class="form-group">
-                <label for="name">신청자 성함 및 닉네임</label>
-                <input type="text" id="name" required placeholder="홍길동 (라즈베리)">
-            </div>
-
-            <div class="form-group">
-                <label for="phone">연락처</label>
-                <input type="tel" id="phone" required placeholder="010-1234-5678">
-            </div>
-
-            <!-- 2. 제품 선택 -->
-            <div class="form-group"
-                style="background: #222; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 25px;">
-                <div class="checkbox-group preview-trigger"
-                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; cursor: help; background: #2a2a2a; border-color: #444;">
-                    <div style="flex: 1;">
-                        <div style="font-weight: 700; color: #fff; font-size: 16px;">베이직 키트 (기본 선택) <span
-                                class="hover-hint">🔍 이미지보기</span></div>
-                        <div style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">
-                            - 구성: 알루미늄 케이스 + 보드 세트 + 배송비 포함
+                    <div style="display: flex; gap: 15px;">
+                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                            <label>성함</label>
+                            <input type="text" id="waitName" placeholder="홍길동">
+                        </div>
+                        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                            <label>닉네임</label>
+                            <input type="text" id="waitNickname" placeholder="라즈베리">
                         </div>
                     </div>
-                    <div style="color: #fff; font-weight: 700; margin-left: 15px;">74,000원</div>
-                    <img src="basic.png" class="preview-image" alt="Basic Kit Preview"
-                        style="bottom: auto; top: calc(100% + 15px);">
-                </div>
-
-                <div style="border-top: 1px solid #333; padding-top: 15px;">
-                    <label style="margin-bottom: 10px;">추가 옵션 선택 <small
-                            style="color: var(--text-muted); font-weight: normal; margin-left: 5px;">(마우스를 대면 이미지가
-                            보입니다)</small></label>
-                    <div class="checkbox-group preview-trigger"
-                        style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
-                        <input type="checkbox" id="opt_pi" class="calc-trigger">
-                        <label for="opt_pi" style="margin-bottom: 0; color: #fff; flex: 1;">라즈베리파이 제로2WH
-                            (+29,900원)</label>
-                        <img src="pi.png" class="preview-image" alt="Rpi Preview">
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>연락처</label>
+                        <input type="tel" id="waitPhone" placeholder="010-1234-5678">
                     </div>
-                    <div class="checkbox-group preview-trigger"
-                        style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
-                        <input type="checkbox" id="opt_sd" class="calc-trigger">
-                        <label for="opt_sd" style="margin-bottom: 0; color: #fff; flex: 1;">샌디스크 SD카드 32GB
-                            (+9,500원)</label>
-                        <img src="sd.png" class="preview-image" alt="SD Card Preview">
+                    <div class="form-group" style="margin-top: 25px;">
+                        <label>희망 구성 (수요 조사)</label>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px;">
+                            <div class="checkbox-group" style="margin-bottom:0; background:#2a2a2a; padding:10px;">
+                                <input type="checkbox" id="pref_basic" value="베이직 키트">
+                                <label for="pref_basic" style="font-size:12px; margin-bottom:0; color:#fff;">베이직
+                                    키트</label>
+                            </div>
+                            <div class="checkbox-group" style="margin-bottom:0; background:#2a2a2a; padding:10px;">
+                                <input type="checkbox" id="pref_pi" value="라즈베리파이">
+                                <label for="pref_pi" style="font-size:12px; margin-bottom:0; color:#fff;">라즈베리파이</label>
+                            </div>
+                        </div>
+                        <p style="font-size: 11px; color: #888; margin-top: 8px;">* 수요 조사 결과에 따라 2차 제작 물량을 결정할 예정입니다.
+                        </p>
                     </div>
-                    <div class="checkbox-group preview-trigger"
-                        style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
-                        <input type="checkbox" id="opt_adapter" class="calc-trigger">
-                        <label for="opt_adapter" style="margin-bottom: 0; color: #fff; flex: 1;">5V 4A 전원 어댑터
-                            (+9,000원)</label>
-                        <img src="adapter.png" class="preview-image" alt="Adapter Preview">
+
+                    <button type="button" id="waitBtn" onclick="submitWaitlist()"
+                        style="margin-top: 25px; width: 100%; background: #fff; color: #000;">대기 명단 등록하기</button>
+                </div>
+            </div>
+
+            <!-- 최종 마감 뷰 추가 -->
+            <div id="fullyClosedView" style="display: none; text-align: center; animation: fadeIn 0.5s ease;">
+                <div style="font-size: 50px; margin-bottom: 20px;">🔒</div>
+                <h2 style="color: #fff; margin-bottom: 10px;">모든 신청이 종료되었습니다.</h2>
+                <p style="color: var(--text-muted); margin-bottom: 30px;">준비된 물량이 모두 소진되어<br>1차 및 대기 명단 접수를 마감하였습니다.
+                </p>
+                <div
+                    style="background: #222; border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 30px;">
+                    <p style="color: #fff; font-size: 15px;">뜨거운 성원에 감사드립니다.<br>다음 제작 일정은 커뮤니티를 통해 확인해 주세요.</p>
+                    <div style="margin-top: 20px;">
+                        <a href="https://cafe.naver.com/raspigamer/59338" target="_blank"
+                            style="color: #4da6ff; text-decoration: none; font-weight: 600;">라즈겜동 카페 바로가기</a>
                     </div>
                 </div>
+                <a href="check.html" style="color: var(--text-muted); text-decoration: underline; font-size: 14px;">이미
+                    신청하셨나요? 신청 현황 확인하기</a>
             </div>
 
-            <div class="form-group" style="margin-top: 30px;">
-                <label for="quantity">수량 선택</label>
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <input type="number" id="quantity" required min="1" value="1" class="calc-trigger"
-                        style="width: 100px; text-align: center;">
-                    <span style="color: var(--text-muted); font-size: 14px;">(기본 키트 74,000원 기준)</span>
+            <form id="gongjeForm" style="display: none;">
+                <!-- 1. 기본 정보 -->
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="name">신청자 성함</label>
+                        <input type="text" id="name" required placeholder="홍길동">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="nickname">닉네임</label>
+                        <input type="text" id="nickname" required placeholder="라즈베리">
+                    </div>
                 </div>
-            </div>
 
-            <!-- 합계 금액 표시: 30-50대를 위한 차분하고 고급스러운 스타일 -->
-            <div id="totalPriceBox"
-                style="border-top: 1px solid #444; border-bottom: 1px solid #444; padding: 25px 0; margin: 35px 0; display: flex; justify-content: space-between; align-items: baseline;">
-                <div style="font-size: 15px; font-weight: 500; color: var(--text-muted);">총 입금 예정 금액</div>
-                <div style="color: #fff;">
-                    <span id="totalPriceDisplay"
-                        style="font-size: 26px; font-weight: 800; letter-spacing: -1px;">74,000</span>
-                    <span style="font-size: 18px; font-weight: 600; margin-left: 2px;">원</span>
+                <div class="form-group">
+                    <label for="phone">연락처</label>
+                    <input type="tel" id="phone" required placeholder="010-1234-5678">
                 </div>
-            </div>
 
-            <!-- 3. 배송 정보 -->
-            <div class="form-group">
-                <label for="address">주소</label>
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <input type="text" id="address" required placeholder="주소 찾기를 눌러주세요" readonly
-                        style="flex: 1; margin-bottom: 0; background-color: #222; color: #fff;">
-                    <button type="button" id="searchAddressBtn"
-                        style="width: 100px; padding: 12px; margin-top: 0; font-size: 14px; background-color: #6c757d;">주소
-                        찾기</button>
+                <!-- 2. 제품 선택 -->
+                <div class="form-group"
+                    style="background: #222; padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 25px;">
+                    <div class="checkbox-group preview-trigger"
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; cursor: help; background: #2a2a2a; border-color: #444;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; color: #fff; font-size: 16px;">베이직 키트 (기본 선택) <span
+                                    class="hover-hint">🔍 이미지보기</span></div>
+                            <div style="font-size: 11px; color: #aaa; margin-bottom: 5px;">현재 닉네임 기준</div>
+                            <div id="statusList" style="display: flex; flex-direction: column; gap: 8px;">
+                                <!-- 실시간 현황이 여기에 추가됨 -->
+                            </div>
+                        </div>
+                        <div style="color: #fff; font-weight: 700; margin-left: 15px;">74,000원</div>
+                        <img src="basic.png" class="preview-image" alt="베이직 키트 미리보기"
+                            style="bottom: auto; top: calc(100% + 15px);">
+                    </div>
+
+                    <div style="border-top: 1px solid #333; padding-top: 15px;">
+                        <label style="margin-bottom: 10px;">추가 옵션 선택 <small
+                                style="color: var(--text-muted); font-weight: normal; margin-left: 5px;">(마우스를 대면 이미지가
+                                보입니다)</small></label>
+                        <div class="checkbox-group preview-trigger"
+                            style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
+                            <input type="checkbox" id="opt_pi" class="calc-trigger">
+                            <label for="opt_pi" style="margin-bottom: 0; color: #fff; flex: 1;">라즈베리파이 제로2WH
+                                (+29,900원)</label>
+                            <img src="pi.png" class="preview-image" alt="라즈베리파이 미리보기">
+                        </div>
+                        <div class="checkbox-group preview-trigger"
+                            style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
+                            <input type="checkbox" id="opt_sd" class="calc-trigger">
+                            <label for="opt_sd" style="margin-bottom: 0; color: #fff; flex: 1;">샌디스크 SD카드 32GB
+                                (+9,500원)</label>
+                            <img src="sd.png" class="preview-image" alt="SD 카드 미리보기">
+                        </div>
+                        <div class="checkbox-group preview-trigger"
+                            style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
+                            <input type="checkbox" id="opt_adapter" class="calc-trigger">
+                            <label for="opt_adapter" style="margin-bottom: 0; color: #fff; flex: 1;">5V 4A 전원 어댑터
+                                (+9,000원)</label>
+                            <img src="adapter.png" class="preview-image" alt="어댑터 미리보기">
+                        </div>
+                    </div>
                 </div>
-                <input type="text" id="address_detail" required placeholder="상세 주소 (동, 호수 등)">
-            </div>
 
-            <!-- 4. 기타 정보 -->
-            <div class="form-group">
-                <label for="depositor">입금자명 (주문자와 다를 경우)</label>
-                <input type="text" id="depositor" required placeholder="신청자와 같으면 동일하게 입력">
-            </div>
+                <div class="form-group" style="margin-top: 30px;">
+                    <label for="quantity">수량 선택</label>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <input type="number" id="quantity" required min="1" value="1" class="calc-trigger"
+                            style="width: 100px; text-align: center;">
+                        <span style="color: var(--text-muted); font-size: 14px;">(기본 키트 74,000원 기준)</span>
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label for="memo">배송 메모 (선택)</label>
-                <input type="text" id="memo" placeholder="예: 문 앞에 두세요">
-            </div>
+                <!-- 합계 금액 표시: 30-50대를 위한 차분하고 고급스러운 스타일 -->
+                <div id="totalPriceBox"
+                    style="border-top: 1px solid #444; border-bottom: 1px solid #444; padding: 25px 0; margin: 35px 0; display: flex; justify-content: space-between; align-items: baseline;">
+                    <div style="font-size: 15px; font-weight: 500; color: var(--text-muted);">총 입금 예정 금액</div>
+                    <div style="color: #fff;">
+                        <span id="totalPriceDisplay"
+                            style="font-size: 26px; font-weight: 800; letter-spacing: -1px;">74,000</span>
+                        <span style="font-size: 18px; font-weight: 600; margin-left: 2px;">원</span>
+                    </div>
+                </div>
 
-            <div class="form-group checkbox-group">
-                <input type="checkbox" id="agreement" required>
-                <label for="agreement" style="margin-bottom: 0; font-weight: normal;">개인정보 수집 및 이용에 동의합니다.</label>
-            </div>
+                <!-- 3. 배송 정보 -->
+                <div class="form-group">
+                    <label for="address">주소</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="text" id="address" required placeholder="주소 찾기를 눌러주세요" readonly
+                            style="flex: 1; margin-bottom: 0; background-color: #222; color: #fff;">
+                        <button type="button" id="searchAddressBtn"
+                            style="width: 100px; padding: 12px; margin-top: 0; font-size: 14px; background-color: #6c757d;">주소
+                            찾기</button>
+                    </div>
+                    <input type="text" id="address_detail" required placeholder="상세 주소 (동, 호수 등)">
+                </div>
 
-            <button type="submit" id="submitBtn">신청하기</button>
-        </form>
+                <!-- 4. 기타 정보 -->
+                <div class="form-group">
+                    <label for="depositor">입금자명 (주문자와 다를 경우)</label>
+                    <input type="text" id="depositor" required placeholder="신청자와 같으면 동일하게 입력">
+                </div>
 
-        <!-- 제작 과정 갤러리 섹션 추가 -->
-        <div id="gallerySection"
-            style="margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 40px;">
-            <div style="text-align: center; margin-bottom: 25px;">
-                <h3 style="color: #fff; margin-bottom: 8px; font-size: 18px;">제작 진행 현황</h3>
-                <p style="color: var(--text-muted); font-size: 13px;">최고의 퀄리티를 위해 세심하게 제작하고 있습니다.</p>
-            </div>
+                <div class="form-group">
+                    <label for="memo">배송 메모 (선택)</label>
+                    <input type="text" id="memo" placeholder="예: 문 앞에 두세요">
+                </div>
 
-            <div id="galleryItems" class="gallery-scroll">
-                <!-- JS에서 동적으로 생성됩니다 -->
-            </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="agreement" required>
+                    <label for="agreement" style="margin-bottom: 0; font-weight: normal;">개인정보 수집 및 이용에 동의합니다.</label>
+                </div>
 
-            <div style="text-align: center; margin-top: 10px; color: #666; font-size: 11px;">
-                <span style="display: inline-block; animation: bounceX 1.5s infinite;">↔</span> 옆으로 밀어서 더보기
-            </div>
+                <button type="submit" id="submitBtn">신청하기</button>
+            </form>
 
-            <style>
-                @keyframes bounceX {
+            <!-- 제작 과정 갤러리 섹션 추가 -->
+            <div id="gallerySection"
+                style="margin-top: 60px; border-top: 1px solid var(--border-color); padding-top: 40px;">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <h3 style="color: #fff; margin-bottom: 8px; font-size: 18px;">제작 진행 현황</h3>
+                    <p style="color: var(--text-muted); font-size: 13px;">최고의 퀄리티를 위해 세심하게 제작하고 있습니다.</p>
+                </div>
 
-                    0%,
-                    100% {
-                        transform: translateX(0);
+                <div id="galleryItems" class="gallery-scroll">
+                    <!-- JS에서 동적으로 생성됩니다 -->
+                </div>
+
+                <div style="text-align: center; margin-top: 10px; color: #666; font-size: 11px;">
+                    <span style="display: inline-block; animation: bounceX 1.5s infinite;">↔</span> 옆으로 밀어서 더보기
+                </div>
+
+                <style>
+                    @keyframes bounceX {
+
+                        0%,
+                        100% {
+                            transform: translateX(0);
+                        }
+
+                        50% {
+                            transform: translateX(5px);
+                        }
                     }
+                </style>
 
-                    50% {
-                        transform: translateX(5px);
-                    }
-                }
-            </style>
-
-            <div style="text-align: center; margin-top: 25px;">
-                <a href="https://cafe.naver.com/raspigamer/59338" target="_blank"
-                    style="color: #aaa; text-decoration: none; font-size: 12px; border: 1px solid #444; padding: 8px 15px; border-radius: 20px;">제작기
-                    더 보러가기 →</a>
+                <div style="text-align: center; margin-top: 25px;">
+                    <a href="https://cafe.naver.com/raspigamer/59338" target="_blank"
+                        style="color: #aaa; text-decoration: none; font-size: 12px; border: 1px solid #444; padding: 8px 15px; border-radius: 20px;">제작기
+                        더 보러가기 →</a>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- 다음 우편번호 서비스 스크립트 -->
-    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <script>
-        const API_BASE = "https://cocreate-backend-114168638882.asia-northeast3.run.app";
+        <!-- 컨펌 모달 -->
+        <div id="confirmModal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>신청 내용 확인</h2>
+                    <p style="color: var(--text-muted); font-size: 13px; margin-top: 8px;">아래 내용을 다시 한번 확인해 주세요.</p>
+                </div>
+                <div id="confirmBody">
+                    <!-- Confirmation items will be inserted here by JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick="closeModal()" style="background: #444; color: #fff;">취소</button>
+                    <button type="button" onclick="executeSubmit()" style="background: #fff; color: #000;">확인 및
+                        신청</button>
+                </div>
+            </div>
+        </div>
 
-        // 제작 진행 현황 사진 리스트 (수정 시 이 리스트만 변경하세요)
-        const PROCESS_PHOTOS = [0, 1, 2, 3, 4, 10, 11, 12];
+        <!-- 다음 우편번호 서비스 스크립트 -->
+        <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+        <script>
+            const API_BASE = "https://cocreate-backend-114168638882.asia-northeast3.run.app";
 
-        function renderGallery() {
-            const container = document.getElementById('galleryItems');
-            if (!container) return;
+            // 제작 진행 현황 사진 리스트 (수정 시 이 리스트만 변경하세요)
+            const PROCESS_PHOTOS = [0, 1, 2, 3, 4, 10, 11, 12];
 
-            container.innerHTML = PROCESS_PHOTOS.map(num => `
+            function renderGallery() {
+                const container = document.getElementById('galleryItems');
+                if (!container) return;
+
+                container.innerHTML = PROCESS_PHOTOS.map(num => `
                 <div class="gallery-item">
                     <img src="process/process${num}_small.png" 
                          alt="제작 공정 ${num}" 
@@ -638,241 +758,299 @@
                          style="width: 100%; height: 100%; object-fit: cover; opacity: 1; transition: opacity 0.3s ease;">
                 </div>
             `).join('');
-        }
-        renderGallery();
-
-        // 연락처 자동 하이픈 기능
-        document.getElementById('phone').addEventListener('input', function (e) {
-            let value = e.target.value.replace(/[^0-9]/g, '');
-            if (value.length > 3 && value.length <= 7) {
-                value = value.slice(0, 3) + '-' + value.slice(3);
-            } else if (value.length > 7) {
-                value = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
             }
-            e.target.value = value;
-        });
+            renderGallery();
 
-        async function checkRecruitmentStatus() {
-            try {
-                const res = await fetch(`${API_BASE}/get_recruitment_status`);
-                const data = await res.json();
-
-                // 로딩 뷰 숨기기
-                document.getElementById('loadingView').style.display = 'none';
-
-                if (data.status === 'success') {
-                    if (data.wait_count !== undefined) {
-                        const display = document.getElementById('waitCountDisplay');
-                        if (display) display.innerText = data.wait_count;
-                    }
-
-                    if (data.is_open) {
-                        document.getElementById('gongjeForm').style.display = 'block';
-                        document.getElementById('waitlistView').style.display = 'none';
-                        document.getElementById('fullyClosedView').style.display = 'none';
-                        const deadlineText = document.querySelector('div[style*="color: var(--text-muted)"]');
-                        if (deadlineText) deadlineText.innerHTML = '1차분 20세트 한정 선착순 모집 중';
-                    } else if (data.is_waitlist_open) {
-                        document.getElementById('gongjeForm').style.display = 'none';
-                        document.getElementById('waitlistView').style.display = 'block';
-                        document.getElementById('fullyClosedView').style.display = 'none';
-                        const deadlineText = document.querySelector('div[style*="color: var(--text-muted)"]');
-                        if (deadlineText) deadlineText.innerHTML = '신청 기간이 마감되었습니다. (대기 명단 접수 중)';
-                    } else {
-                        document.getElementById('gongjeForm').style.display = 'none';
-                        document.getElementById('waitlistView').style.display = 'none';
-                        document.getElementById('fullyClosedView').style.display = 'block';
-                        document.querySelector('h1').style.display = 'none';
-                        const deadlineNotice = document.querySelector('h1').nextElementSibling;
-                        if (deadlineNotice) deadlineNotice.style.display = 'none';
-                    }
+            // 연락처 자동 하이픈 기능
+            document.getElementById('phone').addEventListener('input', function (e) {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value.length > 3 && value.length <= 7) {
+                    value = value.slice(0, 3) + '-' + value.slice(3);
+                } else if (value.length > 7) {
+                    value = value.slice(0, 3) + '-' + value.slice(3, 7) + '-' + value.slice(7, 11);
                 }
-            } catch (err) {
-                console.error('상태 확인 실패:', err);
-                document.getElementById('loadingView').innerHTML = '<p style="color: #ff4d4d;">서버와 통신 중 오류가 발생했습니다. 다시 시도해 주세요.</p>';
-            }
-        }
-        checkRecruitmentStatus();
-
-        const BASE_PRICE = 74000;
-        const OPT_PI_PRICE = 29900;
-        const OPT_SD_PRICE = 9500;
-        const OPT_ADAPTER_PRICE = 9000;
-
-        function calculateTotal() {
-            let totalPerOne = BASE_PRICE;
-            if (document.getElementById('opt_pi').checked) totalPerOne += OPT_PI_PRICE;
-            if (document.getElementById('opt_sd').checked) totalPerOne += OPT_SD_PRICE;
-            if (document.getElementById('opt_adapter').checked) totalPerOne += OPT_ADAPTER_PRICE;
-
-            const quantity = parseInt(document.getElementById('quantity').value) || 1;
-            const finalTotal = totalPerOne * quantity;
-
-            document.getElementById('totalPriceDisplay').innerText = finalTotal.toLocaleString();
-            return finalTotal;
-        }
-
-        // 실시간 금액 계산 이벤트 바인딩
-        document.querySelectorAll('.calc-trigger').forEach(el => {
-            el.addEventListener('change', calculateTotal);
-            el.addEventListener('input', calculateTotal);
-        });
-
-        // 주소 찾기 버튼 이벤트
-        document.getElementById('searchAddressBtn').addEventListener('click', function () {
-            new daum.Postcode({
-                oncomplete: function (data) {
-                    console.log("주소 데이터 수신:", data);
-                    var addr = '';
-                    if (data.userSelectedType === 'R') {
-                        addr = data.roadAddress;
-                    } else {
-                        addr = data.jibunAddress;
-                    }
-                    const fullAddr = `(${data.zonecode}) ${addr}`;
-                    document.getElementById("address").value = fullAddr;
-                    setTimeout(function () {
-                        document.getElementById("address_detail").focus();
-                    }, 100);
-                }
-            }).open();
-        });
-
-        // 계좌 복사 기능
-        let currentAccountInfo = "";
-        function copyAccount() {
-            if (!currentAccountInfo) return;
-            navigator.clipboard.writeText(currentAccountInfo).then(() => {
-                alert('계좌번호가 복사되었습니다.');
+                e.target.value = value;
             });
-        }
 
-        document.getElementById('gongjeForm').addEventListener('submit', function (e) {
-            e.preventDefault();
+            async function checkRecruitmentStatus() {
+                try {
+                    const res = await fetch(`${API_BASE}/get_recruitment_status`);
+                    const data = await res.json();
 
-            const submitBtn = document.getElementById('submitBtn');
-            const originalBtnText = submitBtn.innerText;
+                    // 로딩 뷰 숨기기
+                    document.getElementById('loadingView').style.display = 'none';
 
-            submitBtn.disabled = true;
-            submitBtn.innerText = "전송 중...";
-
-            const options = [];
-            if (document.getElementById('opt_pi').checked) options.push("라즈베리파이");
-            if (document.getElementById('opt_sd').checked) options.push("SD카드");
-            if (document.getElementById('opt_adapter').checked) options.push("어댑터");
-
-            const total = calculateTotal();
-            const formData = {
-                name: document.getElementById('name').value,
-                phone: document.getElementById('phone').value,
-                option: "베이직 키트",
-                additional_options: options.join(", ") || "없음",
-                quantity: document.getElementById('quantity').value,
-                total_price: total,
-                address: document.getElementById('address').value,
-                address_detail: document.getElementById('address_detail').value,
-                depositor: document.getElementById('depositor').value,
-                memo: document.getElementById('memo').value,
-                agreement: document.getElementById('agreement').checked
-            };
-
-            const serverUrl = `${API_BASE}/submit_gongje`;
-
-            fetch(serverUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            })
-                .then(response => response.json())
-                .then(data => {
                     if (data.status === 'success') {
-                        document.getElementById('gongjeForm').style.display = 'none';
-                        document.querySelector('h1').style.display = 'none';
-                        const deadlineNotice = document.querySelector('h1').nextElementSibling;
-                        if (deadlineNotice) deadlineNotice.style.display = 'none';
+                        const round = data.current_round || 1;
+                        document.getElementById('displayRound').innerText = round;
+                        document.getElementById('waitDisplayRound').innerText = round;
 
-                        document.getElementById('resName').innerText = formData.name;
-                        document.getElementById('resPrice').innerText = total.toLocaleString();
-
-                        if (data.account_info) {
-                            currentAccountInfo = data.account_info;
-                            document.getElementById('accountInfo').innerText = data.account_info;
+                        if (data.wait_count !== undefined) {
+                            const display = document.getElementById('waitCount'); // Changed from waitCountDisplay
+                            if (display) display.innerText = data.wait_count;
                         }
 
-                        document.getElementById('successView').style.display = 'block';
-                        window.scrollTo(0, 0);
-                    } else {
-                        alert('오류가 발생했습니다: ' + data.message);
-                        submitBtn.disabled = false;
-                        submitBtn.innerText = originalBtnText;
+                        if (data.is_open) {
+                            document.getElementById('gongjeForm').style.display = 'block';
+                            document.getElementById('waitlistView').style.display = 'none';
+                            document.getElementById('fullyClosedView').style.display = 'none';
+                            const deadlineText = document.querySelector('div[style*="color: var(--text-muted)"]');
+                            if (deadlineText) deadlineText.innerHTML = `${round}차분 20세트 한정 선착순 모집 중`;
+                        } else if (data.is_waitlist_open) {
+                            document.getElementById('gongjeForm').style.display = 'none';
+                            document.getElementById('waitlistView').style.display = 'block';
+                            document.getElementById('fullyClosedView').style.display = 'none';
+                            const deadlineText = document.querySelector('div[style*="color: var(--text-muted)"]');
+                            if (deadlineText) deadlineText.innerHTML = `신청 기간이 마감되었습니다. (${round + 1}차 대기 명단 접수 중)`;
+                        } else {
+                            document.getElementById('gongjeForm').style.display = 'none';
+                            document.getElementById('waitlistView').style.display = 'none';
+                            document.getElementById('fullyClosedView').style.display = 'block';
+                            document.querySelector('h1').style.display = 'none';
+                            const deadlineNotice = document.querySelector('h1').nextElementSibling;
+                            if (deadlineNotice) deadlineNotice.style.display = 'none';
+                        }
                     }
-                })
-                .catch(error => {
-                    alert('서버 통신 오류! 나중에 다시 시도해 주세요.');
-                    console.error('Error:', error);
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = originalBtnText;
-                });
-        });
-
-        // 모바일용 이미지 토글 기능
-        document.querySelectorAll('.preview-trigger').forEach(trigger => {
-            trigger.addEventListener('click', function (e) {
-                // PC 호버와 충돌 방지를 위해 모바일 환경(터치)에서만 작동
-                if (window.innerWidth <= 768) {
-                    // 체크박스 자체를 클릭한 경우는 토글하지 않음 (브라우저 기본 동작에 맡김)
-                    if (e.target.type === 'checkbox') return;
-
-                    e.preventDefault(); // 라벨 클릭 시 체크박스가 같이 클릭되는 경우 방지
-                    this.classList.toggle('show-mobile-preview');
-
-                    // 만약 체크박스도 같이 토글하고 싶다면 아래 주석 해제
-                    // const cb = this.querySelector('input[type="checkbox"]');
-                    // if(cb) { cb.checked = !cb.checked; calculateTotal(); }
+                } catch (err) {
+                    console.error('상태 확인 실패:', err);
+                    document.getElementById('loadingView').innerHTML = '<p style="color: #ff4d4d;">서버와 통신 중 오류가 발생했습니다. 다시 시도해 주세요.</p>';
                 }
-            });
-        });
+            }
+            checkRecruitmentStatus();
 
-        // 대기 명단 신청 함수
-        function submitWaitlist() {
-            const name = document.getElementById('waitName').value;
-            const phone = document.getElementById('waitPhone').value;
-            const btn = document.getElementById('waitBtn');
+            const BASE_PRICE = 74000;
+            const OPT_PI_PRICE = 29900;
+            const OPT_SD_PRICE = 9500;
+            const OPT_ADAPTER_PRICE = 9000;
 
-            if (!name || !phone) {
-                alert('성함과 연락처를 입력해 주세요.');
-                return;
+            function calculateTotal() {
+                let totalPerOne = BASE_PRICE;
+                if (document.getElementById('opt_pi').checked) totalPerOne += OPT_PI_PRICE;
+                if (document.getElementById('opt_sd').checked) totalPerOne += OPT_SD_PRICE;
+                if (document.getElementById('opt_adapter').checked) totalPerOne += OPT_ADAPTER_PRICE;
+
+                const quantity = parseInt(document.getElementById('quantity').value) || 1;
+                const finalTotal = totalPerOne * quantity;
+
+                document.getElementById('totalPriceDisplay').innerText = finalTotal.toLocaleString();
+                return finalTotal;
             }
 
-            btn.disabled = true;
-            btn.innerText = "신청 중...";
+            // 실시간 금액 계산 이벤트 바인딩
+            document.querySelectorAll('.calc-trigger').forEach(el => {
+                el.addEventListener('change', calculateTotal);
+                el.addEventListener('input', calculateTotal);
+            });
 
-            fetch('https://cocreate-backend-114168638882.asia-northeast3.run.app/submit_waitlist', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name: name, phone: phone })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        alert(data.message);
-                        location.reload();
-                    } else {
-                        alert('오류: ' + data.message);
+            // 주소 찾기 버튼 이벤트
+            document.getElementById('searchAddressBtn').addEventListener('click', function () {
+                new daum.Postcode({
+                    oncomplete: function (data) {
+                        console.log("주소 데이터 수신:", data);
+                        var addr = '';
+                        if (data.userSelectedType === 'R') {
+                            addr = data.roadAddress;
+                        } else {
+                            addr = data.jibunAddress;
+                        }
+                        const fullAddr = `(${data.zonecode}) ${addr}`;
+                        document.getElementById("address").value = fullAddr;
+                        setTimeout(function () {
+                            document.getElementById("address_detail").focus();
+                        }, 100);
+                    }
+                }).open();
+            });
+
+            // 계좌 복사 기능
+            let currentAccountInfo = "";
+            function copyAccount() {
+                if (!currentAccountInfo) return;
+                navigator.clipboard.writeText(currentAccountInfo).then(() => {
+                    alert('계좌번호가 복사되었습니다.');
+                });
+            }
+
+            document.getElementById('gongjeForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const total = calculateTotal();
+                const options = [];
+                if (document.getElementById('opt_pi').checked) options.push("라즈베리파이 제로2WH");
+                if (document.getElementById('opt_sd').checked) options.push("샌디스크 SD카드 32GB");
+                if (document.getElementById('opt_adapter').checked) options.push("5V 4A 전원 어댑터");
+
+                const formData = {
+                    name: document.getElementById('name').value,
+                    nickname: document.getElementById('nickname').value,
+                    phone: document.getElementById('phone').value,
+                    option: "베이직 키트",
+                    additional_options: options.join(", ") || "없음",
+                    quantity: document.getElementById('quantity').value,
+                    total_price: total,
+                    address: document.getElementById('address').value,
+                    address_detail: document.getElementById('address_detail').value,
+                    depositor: document.getElementById('depositor').value,
+                    memo: document.getElementById('memo').value,
+                    agreement: document.getElementById('agreement').checked
+                };
+
+                // 필수값 확인
+                if (!formData.name || !formData.nickname || !formData.phone || !formData.address || !formData.depositor || !formData.agreement) {
+                    alert('필수 항목을 모두 입력하고 약관에 동의해 주세요.');
+                    return;
+                }
+
+                // [추가] 모달로 최종 확인
+                showConfirmModal(formData);
+            });
+
+            let pendingFormData = null;
+
+            function showConfirmModal(data) {
+                pendingFormData = data;
+                const body = document.getElementById('confirmBody');
+
+                const summary = [
+                    { label: '신청자', value: `${data.name} (${data.nickname})` },
+                    { label: '연락처', value: data.phone },
+                    { label: '선택 옵션', value: data.additional_options },
+                    { label: '수량', value: `${data.quantity}개` },
+                    { label: '최종 금액', value: `${data.total_price.toLocaleString()}원` },
+                    { label: '주소', value: `${data.address} ${data.address_detail}` },
+                    { label: '입금자명', value: data.depositor }
+                ];
+
+                body.innerHTML = summary.map(item => `
+                    <div class="confirm-item">
+                        <div class="confirm-label">${item.label}</div>
+                        <div class="confirm-value">${item.value}</div>
+                    </div>
+                `).join('');
+
+                document.getElementById('confirmModal').style.display = 'flex';
+            }
+
+            function closeModal() {
+                document.getElementById('confirmModal').style.display = 'none';
+            }
+
+            function executeSubmit() {
+                if (!pendingFormData) return;
+
+                const submitBtn = document.getElementById('submitBtn');
+                const originalBtnText = submitBtn.innerText;
+                submitBtn.disabled = true;
+                submitBtn.innerText = "전송 중...";
+                closeModal();
+
+                fetch('https://cocreate-backend-114168638882.asia-northeast3.run.app/submit_gongje', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(pendingFormData)
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            document.getElementById('gongjeForm').style.display = 'none';
+                            document.querySelector('h1').style.display = 'none';
+                            const deadlineNotice = document.querySelector('h1').nextElementSibling;
+                            if (deadlineNotice) deadlineNotice.style.display = 'none';
+
+                            document.getElementById('resName').innerText = pendingFormData.name;
+                            document.getElementById('resPrice').innerText = pendingFormData.total_price.toLocaleString();
+
+                            if (data.account_info) {
+                                currentAccountInfo = data.account_info;
+                                document.getElementById('accountInfo').innerText = data.account_info;
+                            }
+
+                            document.getElementById('successView').style.display = 'block';
+                            window.scrollTo(0, 0);
+                        } else {
+                            alert('오류가 발생했습니다: ' + data.message);
+                            submitBtn.disabled = false;
+                            submitBtn.innerText = originalBtnText;
+                        }
+                    })
+                    .catch(error => {
+                        alert('서버 통신 오류! 나중에 다시 시도해 주세요.');
+                        console.error('Error:', error);
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = originalBtnText;
+                    });
+            }
+
+            // 모바일용 이미지 토글 기능
+            document.querySelectorAll('.preview-trigger').forEach(trigger => {
+                trigger.addEventListener('click', function (e) {
+                    // PC 호버와 충돌 방지를 위해 모바일 환경(터치)에서만 작동
+                    if (window.innerWidth <= 768) {
+                        // 체크박스 자체를 클릭한 경우는 토글하지 않음 (브라우저 기본 동작에 맡김)
+                        if (e.target.type === 'checkbox') return;
+
+                        e.preventDefault(); // 라벨 클릭 시 체크박스가 같이 클릭되는 경우 방지
+                        this.classList.toggle('show-mobile-preview');
+
+                        // 만약 체크박스도 같이 토글하고 싶다면 아래 주석 해제
+                        // const cb = this.querySelector('input[type="checkbox"]');
+                        // if(cb) { cb.checked = !cb.checked; calculateTotal(); }
+                    }
+                });
+            });
+
+            // 대기 명단 신청 함수
+            function submitWaitlist() {
+                const name = document.getElementById('waitName').value;
+                const nickname = document.getElementById('waitNickname').value;
+                const phone = document.getElementById('waitPhone').value;
+                const btn = document.getElementById('waitBtn');
+
+                // 수요 조사 데이터 추가
+                const prefs = [];
+                if (document.getElementById('pref_basic').checked) prefs.push("베이직 키트");
+                if (document.getElementById('pref_pi').checked) prefs.push("라즈베리파이");
+                const preferredOptions = prefs.join(", ") || "없음";
+
+                if (!name || !nickname || !phone) {
+                    alert('성함, 닉네임, 연락처를 모두 입력해 주세요.');
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerText = "신청 중...";
+
+                fetch('https://cocreate-backend-114168638882.asia-northeast3.run.app/submit_waitlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        nickname: nickname,
+                        phone: phone,
+                        preferred_options: preferredOptions
+                    })
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            alert(data.message);
+                            location.reload();
+                        } else {
+                            alert('오류: ' + data.message);
+                            btn.disabled = false;
+                            btn.innerText = "2차 제작 알림 받기";
+                        }
+                    })
+                    .catch(err => {
+                        alert('통신 오류가 발생했습니다.');
                         btn.disabled = false;
                         btn.innerText = "2차 제작 알림 받기";
-                    }
-                })
-                .catch(err => {
-                    alert('통신 오류가 발생했습니다.');
-                    btn.disabled = false;
-                    btn.innerText = "2차 제작 알림 받기";
-                });
-        }
+                    });
+            }
 
-        // 초기 계산
-        calculateTotal();
-    </script>
+            // 초기 계산
+            calculateTotal();
+        </script>
 </body>
 
 </html>
