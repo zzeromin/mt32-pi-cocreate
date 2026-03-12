@@ -520,7 +520,7 @@
                     </div>
                     <div class="form-group" style="flex: 1; margin-bottom: 0;">
                         <label>닉네임</label>
-                        <input type="text" id="waitNickname" placeholder="라즈베리">
+                        <input type="text" id="waitNickname" placeholder="라즈겜동">
                     </div>
                 </div>
                 <div class="form-group" style="margin-top: 20px;">
@@ -532,15 +532,22 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px;">
                         <div class="checkbox-group" style="margin-bottom:0; background:#2a2a2a; padding:10px;">
                             <input type="checkbox" id="pref_basic" value="베이직 키트">
-                            <label for="pref_basic" style="font-size:12px; margin-bottom:0; color:#fff;">베이직
-                                키트</label>
+                            <label for="pref_basic" style="font-size:12px; margin-bottom:0; color:#fff;">베이직 키트</label>
                         </div>
                         <div class="checkbox-group" style="margin-bottom:0; background:#2a2a2a; padding:10px;">
-                            <input type="checkbox" id="pref_pi" value="라즈베리파이">
+                            <input type="checkbox" id="pref_pi" value="라즈베리파이 제로2WH">
                             <label for="pref_pi" style="font-size:12px; margin-bottom:0; color:#fff;">라즈베리파이</label>
                         </div>
+                        <div class="checkbox-group" style="margin-bottom:0; background:#2a2a2a; padding:10px;">
+                            <input type="checkbox" id="pref_sd" value="SD카드">
+                            <label for="pref_sd" style="font-size:12px; margin-bottom:0; color:#fff;">SD카드</label>
+                        </div>
+                        <div class="checkbox-group" style="margin-bottom:0; background:#2a2a2a; padding:10px;">
+                            <input type="checkbox" id="pref_adapter" value="아답터">
+                            <label for="pref_adapter" style="font-size:12px; margin-bottom:0; color:#fff;">아답터</label>
+                        </div>
                     </div>
-                    <p style="font-size: 11px; color: #888; margin-top: 8px;">* 수요 조사 결과에 따라 2차 제작 물량을 결정할 예정입니다.
+                    <p style="font-size: 11px; color: #888; margin-top: 8px;">* 수요 조사 결과에 따라 3차 제작 물량을 결정할 예정입니다.
                     </p>
                 </div>
 
@@ -1011,6 +1018,8 @@
             const prefs = [];
             if (document.getElementById('pref_basic').checked) prefs.push("베이직 키트");
             if (document.getElementById('pref_pi').checked) prefs.push("라즈베리파이");
+            if (document.getElementById('pref_sd').checked) prefs.push("SD카드");
+            if (document.getElementById('pref_adapter').checked) prefs.push("아답터");
             const preferredOptions = prefs.join(", ") || "없음";
 
             if (!name || !nickname || !phone) {
@@ -1039,13 +1048,13 @@
                     } else {
                         alert('오류: ' + data.message);
                         btn.disabled = false;
-                        btn.innerText = "2차 제작 알림 받기";
+                        btn.innerText = "대기 명단 등록하기";
                     }
                 })
                 .catch(err => {
                     alert('통신 오류가 발생했습니다.');
                     btn.disabled = false;
-                    btn.innerText = "2차 제작 알림 받기";
+                    btn.innerText = "대기 명단 등록하기";
                 });
         }
 
