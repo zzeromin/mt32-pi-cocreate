@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MT32-Pi 신청 확인</title>
+    <meta name="description" content="MT32-Pi 공동제작 신청 및 배송 현황을 확인하세요.">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://zzeromin.github.io/mt32-pi-cocreate/check.html">
+    <meta property="og:title" content="MT32-Pi 신청 확인">
+    <meta property="og:description" content="공동제작 신청 및 배송 현황 조회">
+    <meta property="og:image" content="https://zzeromin.github.io/mt32-pi-cocreate/logo.png">
+    <style>
+        :root {
+            --primary-color: #ffffff;
+            --bg-color: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --text-color: #ffffff;
+            --text-muted: #aaaaaa;
+            --border-color: #333333;
+            --accent-glow: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-container img {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-size: 20px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            background-color: #222;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        #resultArea {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .status-card {
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .status-접수완료 {
+            background: #333;
+            color: #aaa;
+        }
+
+        .status-입금확인 {
+            background: #1b5e20;
+            color: #a5d6a7;
+        }
+
+        .status-발송완료 {
+            background: #0d47a1;
+            color: #90caf9;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        /* 타임라인 스타일 */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: #333;
+            z-index: 1;
+        }
+
+        .timeline-step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 12px;
+            height: 12px;
+            background: #333;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            border: 3px solid var(--card-bg);
+            transition: all 0.3s ease;
+        }
+
+        .step-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .timeline-step.active .step-circle {
+            background: #fff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            transform: scale(1.2);
+        }
+
+        .timeline-step.active .step-label {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .timeline-step.completed .step-circle {
+            background: #fff;
+        }
+
+        .timeline-progress {
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            height: 2px;
+            background: #fff;
+            z-index: 1;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img src="logo.png" alt="MT32-Pi Logo">
+        </div>
+        <h1>신청 및 배송 현황 조회</h1>
+
+        <div id="inputArea">
+            <div class="form-group">
+                <label>신청자 성함 (또는 닉네임)</label>
+                <input type="text" id="checkName" placeholder="예: 홍길동">
+            </div>
+            <div class="form-group">
+                <label>연락처 뒤 4자리</label>
+                <input type="tel" id="checkPhone" maxlength="4" placeholder="예: 5678">
+            </div>
+            <button onclick="checkStatus()" id="checkBtn">조회하기</button>
+            <a href="index.html" class="back-link">← 신청 페이지로 돌아가기</a>
+        </div>
+
+        <div id="resultArea">
+            <div id="timelineArea"></div>
+            <div id="statusList"></div>
+            <button onclick="location.reload()" style="background: #333; color: #fff; margin-top:20px;">다시 조회하기</button>
+        </div>
+
+        <!-- 유용한 링크 섹션 추가 -->
+        <div style="margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 25px;">
+            <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 15px;">도움이 필요하신가요?</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <a href="https://cafe.naver.com/raspigamer/59338" target="_blank"
+                    style="background: #222; padding: 12px; border-radius: 8px; text-decoration: none; color: #aaa; font-size: 13px; text-align: center; border: 1px solid #333;">📘
+                    공시 사항</a>
+                <a href="https://cafe.naver.com/raspigamer" target="_blank"
+                    style="background: #222; padding: 12px; border-radius: 8px; text-decoration: none; color: #aaa; font-size: 13px; text-align: center; border: 1px solid #333;">💬
+                    커뮤니티</a>
+            </div>
+            <div style="margin-top: 10px;">
+                <a href="https://zzeromin.github.io/MT32-Pi-Manual/" target="_blank"
+                    style="display: block; background: #222; padding: 12px; border-radius: 8px; text-decoration: none; color: #fff; font-size: 13px; text-align: center; border: 1px solid #444; font-weight: 600;">📖
+                    MT32-Pi 설치 및 매뉴얼 보기</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = "https://cocreate-backend-114168638882.asia-northeast3.run.app/api/ippeosuper";
+
+        // XSS 방지용 HTML 이스케이핑 함수
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function renderTimeline(currentStage) {
+            if (!currentStage) return '';
+            const stages = ['신청/입금', '부품수급', '제작/검수', '배송시작'];
+            const progressWidth = ((currentStage - 1) / (stages.length - 1)) * 80;
+
+            let html = `
+                <div style="font-size: 14px; font-weight: 700; margin-bottom: 20px; color: #fff; text-align:center;">전체 공정 현황</div>
+                <div class="timeline">
+                    <div class="timeline-progress" style="width: ${progressWidth}%"></div>
+            `;
+
+            stages.forEach((stage, index) => {
+                const stepNum = index + 1;
+                let statusClass = '';
+                if (stepNum < currentStage) statusClass = 'completed';
+                else if (stepNum === currentStage) statusClass = 'active';
+
+                html += `
+                    <div class="timeline-step ${statusClass}">
+                        <div class="step-circle"></div>
+                        <div class="step-label">${stage}</div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            return html;
+        }
+
+        function renderStatusCard(item, accountInfo) {
+            const safeStatus = escapeHtml(item.status);
+            const safeTimestamp = escapeHtml(item.timestamp);
+            const safeOption = escapeHtml(item.option);
+            const safeTotalPrice = parseInt(item.total_price, 10) || 0;
+            const safeTrackingNo = escapeHtml(item.tracking_no);
+            const safeAccountInfo = escapeHtml(accountInfo);
+
+            return `
+                <div class="status-card">
+                    <div class="status-badge status-${safeStatus}">${safeStatus}</div>
+                    <div style="font-size: 13px; color: #888;">신청일: ${safeTimestamp}</div>
+                    <div style="font-size: 16px; font-weight: 700; margin-top: 8px;">${safeOption}</div>
+                    <div style="font-size: 15px; margin-top: 5px;">${safeStatus === '접수완료' ? '결제 예정액' : '입금액'}: <span style="color:#fff; font-weight:700;">${safeTotalPrice.toLocaleString()}원</span></div>
+                    
+                    ${safeTrackingNo ? (function () {
+                    // "택배사 번호" 형식 분리 시도
+                    const parts = safeTrackingNo.split(' ');
+                    let courier = '';
+                    let number = safeTrackingNo;
+
+                    // 알려진 택배사 목록
+                    const couriers = ['CJ대한통운', '우체국택배', '한진택배', '롯데택배', '로젠택배'];
+                    if (parts.length > 1 && couriers.includes(parts[0])) {
+                        courier = parts[0];
+                        number = parts.slice(1).join(' ');
+                    }
+
+                    return `
+                        <div style="margin-top: 15px; padding: 12px; background: #333; border-radius: 8px; border: 1px solid #444;">
+                            <div style="color: #aaa; font-size: 11px; margin-bottom:3px;">${courier ? courier : '운송장'} 번호</div>
+                            <div style="font-size: 14px; color: #fff; font-weight: 700; display:flex; justify-content:space-between; align-items:center;">
+                                ${number}
+                                <a href="https://search.naver.com/search.naver?query=${encodeURIComponent(safeTrackingNo)}" target="_blank" rel="noopener noreferrer" style="color: #4da6ff; text-decoration: none; font-size: 12px; background: rgba(77,166,255,0.1); padding: 4px 8px; border-radius: 4px;">조회하기</a>
+                            </div>
+                        </div>
+                        `;
+                })() : ''}
+
+                    ${safeStatus === '접수완료' && safeAccountInfo ? `
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #333;">
+                        <div style="color: #aaa; font-size: 12px; margin-bottom: 5px;">입금 계좌 안내</div>
+                        <div style="font-size: 14px; font-weight: 700; color: #fff; margin-bottom:10px;">${safeAccountInfo}</div>
+                        <button onclick="copyAccount('${safeAccountInfo}')" style="width: auto; padding: 8px 15px; font-size: 12px; background: #444; color: #fff; border-radius:6px;">계좌번호 복사</button>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function checkStatus() {
+            const nameEl = document.getElementById('checkName');
+            const phoneEl = document.getElementById('checkPhone');
+            const btn = document.getElementById('checkBtn');
+
+            if (!nameEl.value || !phoneEl.value) {
+                alert('정보를 모두 입력해주세요.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "조회 중...";
+
+            fetch(`${API_BASE}/check_status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: nameEl.value, phone_last4: phoneEl.value })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const listArea = document.getElementById('statusList');
+                    const timelineArea = document.getElementById('timelineArea');
+                    const resultArea = document.getElementById('resultArea');
+                    const inputArea = document.getElementById('inputArea');
+
+                    listArea.innerHTML = '';
+                    timelineArea.innerHTML = '';
+
+                    if (data.results && data.results.length > 0) {
+                        // Timeline
+                        timelineArea.innerHTML = renderTimeline(data.current_stage);
+
+                        // Cards
+                        data.results.forEach(item => {
+                            const tempDiv = document.createElement('div');
+                            tempDiv.innerHTML = renderStatusCard(item, data.account_info);
+                            listArea.appendChild(tempDiv.firstElementChild);
+                        });
+                    } else {
+                        listArea.innerHTML = '<p style="text-align:center; padding: 40px; color:#888;">일치하는 신청 내역이 없습니다.</p>';
+                    }
+
+                    inputArea.style.display = 'none';
+                    resultArea.style.display = 'block';
+                })
+                .catch(err => {
+                    alert('조회 중 오류가 발생했습니다.');
+                    btn.disabled = false;
+                    btn.innerText = "조회하기";
+                });
+        }
+
+        function copyAccount(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('계좌번호가 복사되었습니다.');
+            });
+        }
+    </script>
+</body>
+
+</html>
