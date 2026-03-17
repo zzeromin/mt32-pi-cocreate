@@ -560,6 +560,19 @@
                     <div style="color: #fff; font-weight: 700; margin-left: 15px;">255,000원</div>
                 </div>
 
+                <!-- [신규] 파이 버전에 따른 HDMI 케이블 구분용 선택지 -->
+                <div style="margin-left: 5px; margin-bottom: 20px;">
+                    <div style="font-size: 13px; color: #ffeb3b; font-weight: 600; margin-bottom: 8px;">* 사용하는 파이 모델에 맞는 세트를 선택해 주세요 (HDMI 케이블 사양 결정)</div>
+                    <div style="display: flex; gap: 20px; background: #2a2a2a; padding: 10px; border-radius: 6px;">
+                        <label style="display: flex; align-items: center; color: #fff; font-size: 14px; cursor: pointer;">
+                            <input type="radio" name="pi_version" value="Pi3" checked style="width: 18px; height: 18px; margin-right: 8px; cursor: pointer;"> 라즈베리파이3용 세트
+                        </label>
+                        <label style="display: flex; align-items: center; color: #fff; font-size: 14px; cursor: pointer;">
+                            <input type="radio" name="pi_version" value="Pi4" style="width: 18px; height: 18px; margin-right: 8px; cursor: pointer;"> 라즈베리파이4용 세트
+                        </label>
+                    </div>
+                </div>
+
                 <div style="border-top: 1px solid #333; padding-top: 15px;">
                     <label style="margin-bottom: 10px;">추가 옵션 선택</label>
                     <div class="checkbox-group" style="margin-bottom: 10px; background: #2a2a2a;">
@@ -777,15 +790,18 @@
             const total = calculateTotal();
             const options = [];
             if (document.getElementById('opt_pi').checked) options.push("라즈베리파이3B+");
-            if (document.getElementById('opt_pi4').checked) options.push("라즈베리파이4B");
+            if (document.getElementById('opt_pi4').checked) options.push("라즈베리파이4B 1GB");
             if (document.getElementById('opt_sd').checked) options.push("메모리카드 Sandisk 32GB");
             if (document.getElementById('opt_adapter').checked) options.push("아답터 12V 5A DC");
+
+            const piVersion = document.querySelector('input[name="pi_version"]:checked').value;
+            const piVersionText = piVersion === 'Pi3' ? '라즈베리파이3용' : '라즈베리파이4용';
 
             const formData = {
                 name: document.getElementById('name').value,
                 nickname: document.getElementById('nickname').value,
                 phone: document.getElementById('phone').value,
-                option: "아이뻐슈퍼 케이스 부품세트",
+                option: `아이뻐슈퍼 케이스 부품세트 (${piVersionText})`,
                 additional_options: options.join(", ") || "없음",
                 quantity: document.getElementById('quantity').value,
                 total_price: total,
