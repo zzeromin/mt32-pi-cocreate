@@ -229,8 +229,12 @@
                     <label>희망 구성 (수요 조사)</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px;">
                         <div class="checkbox-group" style="margin-bottom:0; background:#2a2a2a; padding:10px;">
-                            <input type="checkbox" id="pref_basic" value="베이직 키트">
-                            <label for="pref_basic" style="font-size:12px; margin-bottom:0; color:#fff;">베이직 키트</label>
+                            <input type="checkbox" id="pref_basic_v3" value="라즈베리파이3용 세트">
+                            <label for="pref_basic_v3" style="font-size:12px; margin-bottom:0; color:#fff;">라즈베리파이3용 세트</label>
+                        </div>
+                        <div class="checkbox-group" style="margin-bottom:0; background:#2a2a2a; padding:10px;">
+                            <input type="checkbox" id="pref_basic_v4" value="라즈베리파이4용 세트">
+                            <label for="pref_basic_v4" style="font-size:12px; margin-bottom:0; color:#fff;">라즈베리파이4용 세트</label>
                         </div>
                         <div class="checkbox-group" style="margin-bottom:0; background:#2a2a2a; padding:10px;">
                             <input type="checkbox" id="pref_pi" value="라즈베리파이3B+">
@@ -324,8 +328,10 @@
             const btn = document.getElementById('waitBtn');
 
             const prefs = [];
-            if (document.getElementById('pref_basic').checked) prefs.push("베이직 키트");
-            if (document.getElementById('pref_pi').checked) prefs.push("라즈베리파이");
+            if (document.getElementById('pref_basic_v3').checked) prefs.push("라즈베리파이3용 세트");
+            if (document.getElementById('pref_basic_v4').checked) prefs.push("라즈베리파이4용 세트");
+            if (document.getElementById('pref_pi').checked) prefs.push("라즈베리파이3B+");
+            if (document.getElementById('pref_pi4').checked) prefs.push("라즈베리파이4B 1GB");
             if (document.getElementById('pref_sd').checked) prefs.push("SD카드");
             if (document.getElementById('pref_adapter').checked) prefs.push("아답터");
             const preferredOptions = prefs.join(", ") || "없음";
