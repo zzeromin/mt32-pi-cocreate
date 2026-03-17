@@ -64,7 +64,10 @@
             width: 100%;
             height: auto;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            /* 배경이 검은색인 로고를 컨테이너 배경(#1a1a1a)과 자연스럽게 합성 */
+            mix-blend-mode: screen;
+            display: block;
+            margin: 0 auto;
         }
 
         h1 {
