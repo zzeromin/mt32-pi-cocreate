@@ -568,6 +568,11 @@
                             (+62,000원)</label>
                     </div>
                     <div class="checkbox-group" style="margin-bottom: 10px; background: #2a2a2a;">
+                        <input type="checkbox" id="opt_pi4" class="calc-trigger">
+                        <label for="opt_pi4" style="margin-bottom: 0; color: #fff; flex: 1;">라즈베리파이4B
+                            (+70,000원)</label>
+                    </div>
+                    <div class="checkbox-group" style="margin-bottom: 10px; background: #2a2a2a;">
                         <input type="checkbox" id="opt_sd" class="calc-trigger">
                         <label for="opt_sd" style="margin-bottom: 0; color: #fff; flex: 1;">메모리카드 Sandisk 32GB
                             (+15,000원)</label>
@@ -713,12 +718,14 @@
 
         const BASE_PRICE = 255000;
         const OPT_PI_PRICE = 62000;
+        const OPT_PI4_PRICE = 70000;
         const OPT_SD_PRICE = 15000;
         const OPT_ADAPTER_PRICE = 10000;
 
         function calculateTotal() {
             let totalPerOne = BASE_PRICE;
             if (document.getElementById('opt_pi').checked) totalPerOne += OPT_PI_PRICE;
+            if (document.getElementById('opt_pi4').checked) totalPerOne += OPT_PI4_PRICE;
             if (document.getElementById('opt_sd').checked) totalPerOne += OPT_SD_PRICE;
             if (document.getElementById('opt_adapter').checked) totalPerOne += OPT_ADAPTER_PRICE;
 
@@ -770,6 +777,7 @@
             const total = calculateTotal();
             const options = [];
             if (document.getElementById('opt_pi').checked) options.push("라즈베리파이3B+");
+            if (document.getElementById('opt_pi4').checked) options.push("라즈베리파이4B");
             if (document.getElementById('opt_sd').checked) options.push("메모리카드 Sandisk 32GB");
             if (document.getElementById('opt_adapter').checked) options.push("아답터 12V 5A DC");
 
