@@ -738,6 +738,7 @@
                 document.getElementById('loadingView').style.display = 'none';
 
                 if (data.status === 'success') {
+                    const round = data.current_round || 1;
                     document.getElementById('displayRound').innerText = round;
                     document.querySelectorAll('.current-round-text').forEach(el => el.innerText = round);
 
@@ -745,6 +746,7 @@
                         document.getElementById('gongjeForm').style.display = 'block';
                         document.getElementById('waitlistView').style.display = 'none';
                         document.getElementById('fullyClosedView').style.display = 'none';
+                        const deadlineText = document.querySelector('div[style*="color: var(--text-muted)"]');
                         if (deadlineText) deadlineText.innerHTML = `${round}차분 선착순 모집 중 (20세트 한정)`;
                     } else if (data.is_waitlist_open) {
                         document.getElementById('gongjeForm').style.display = 'none';
