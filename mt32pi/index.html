@@ -11,14 +11,14 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://zzeromin.github.io/mt32-pi-cocreate/">
     <meta property="og:title" content="MT32-Pi 공동제작 신청">
-    <meta property="og:description" content="최상의 퀄리티를 위한 MT32-Pi 공동제작 1차분 신청">
+    <meta property="og:description" content="최상의 퀄리티를 위한 MT32-Pi 공동제작 2차분 신청">
     <meta property="og:image" content="https://zzeromin.github.io/mt32-pi-cocreate/logo.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://zzeromin.github.io/mt32-pi-cocreate/">
     <meta property="twitter:title" content="MT32-Pi 공동제작 신청">
-    <meta property="twitter:description" content="최상의 퀄리티를 위한 MT32-Pi 공동제작 1차분 신청">
+    <meta property="twitter:description" content="최상의 퀄리티를 위한 MT32-Pi 공동제작 2차분 신청">
     <meta property="twitter:image" content="https://zzeromin.github.io/mt32-pi-cocreate/logo.png">
     <style>
         :root {
@@ -445,10 +445,10 @@
         <h1><span id="displayRound"></span>차 공동제작 신청서</h1>
         <div style="text-align: center; margin-top: -20px; margin-bottom: 35px;">
             <div style="color: #ffeb3b; font-size: 15px; font-weight: 600; margin-bottom: 8px;">
-                최상의 퀄리티 유지를 위해 1차분 20세트 한정 선착순 제작
+                최상의 퀄리티 유지를 위해 <span class="current-round-text"></span>차분 선착순 한정 제작
             </div>
             <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 10px;">
-                신청 기간: ~ 2026. 02. 10 오전 9시 (선착순 마감) | <a href="check.html"
+                 신청 기간: ~ 2026. 03. 31 (선착순 마감) | <a href="check.html"
                     style="color: #aaa; text-decoration: underline;">이미 신청하셨나요?</a>
             </div>
             <div style="font-size: 13px;">
@@ -509,7 +509,7 @@
         <div id="fullyClosedView" style="display: none; text-align: center; animation: fadeIn 0.5s ease;">
             <div style="font-size: 50px; margin-bottom: 20px;">🔒</div>
             <h2 style="color: #fff; margin-bottom: 10px;">모든 신청이 종료되었습니다.</h2>
-            <p style="color: var(--text-muted); margin-bottom: 30px;">준비된 물량이 모두 소진되어<br>1차 및 대기 명단 접수를 마감하였습니다.
+            <p style="color: var(--text-muted); margin-bottom: 30px;">준비된 물량이 모두 소진되어<br>현재 회차 및 대기 명단 접수를 마감하였습니다.
             </p>
             <div
                 style="background: #222; border: 1px solid #444; border-radius: 12px; padding: 25px; margin-bottom: 30px;">
@@ -554,7 +554,7 @@
                             <!-- 실시간 현황이 여기에 추가됨 -->
                         </div>
                     </div>
-                    <div style="color: #fff; font-weight: 700; margin-left: 15px;">74,000원</div>
+                    <div style="color: #fff; font-weight: 700; margin-left: 15px;">94,000원</div>
                     <img src="basic.png" class="preview-image" alt="베이직 키트 미리보기"
                         style="bottom: auto; top: calc(100% + 15px);">
                 </div>
@@ -567,14 +567,14 @@
                         style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
                         <input type="checkbox" id="opt_pi" class="calc-trigger">
                         <label for="opt_pi" style="margin-bottom: 0; color: #fff; flex: 1;">라즈베리파이 제로2WH
-                            (+29,900원)</label>
+                            (+39,900원)</label>
                         <img src="pi.png" class="preview-image" alt="라즈베리파이 미리보기">
                     </div>
                     <div class="checkbox-group preview-trigger"
                         style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
                         <input type="checkbox" id="opt_sd" class="calc-trigger">
                         <label for="opt_sd" style="margin-bottom: 0; color: #fff; flex: 1;">샌디스크 SD카드 32GB
-                            (+9,500원)</label>
+                            (+15,000원)</label>
                         <img src="sd.png" class="preview-image" alt="SD 카드 미리보기">
                     </div>
                     <div class="checkbox-group preview-trigger"
@@ -592,7 +592,7 @@
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <input type="number" id="quantity" required min="1" value="1" class="calc-trigger"
                         style="width: 100px; text-align: center;">
-                    <span style="color: var(--text-muted); font-size: 14px;">(기본 키트 74,000원 기준)</span>
+                    <span style="color: var(--text-muted); font-size: 14px;">(기본 키트 94,000원 기준)</span>
                 </div>
             </div>
 
@@ -602,7 +602,7 @@
                 <div style="font-size: 15px; font-weight: 500; color: var(--text-muted);">총 입금 예정 금액</div>
                 <div style="color: #fff;">
                     <span id="totalPriceDisplay"
-                        style="font-size: 26px; font-weight: 800; letter-spacing: -1px;">74,000</span>
+                        style="font-size: 26px; font-weight: 800; letter-spacing: -1px;">94,000</span>
                     <span style="font-size: 18px; font-weight: 600; margin-left: 2px;">원</span>
                 </div>
             </div>
@@ -738,15 +738,14 @@
                 document.getElementById('loadingView').style.display = 'none';
 
                 if (data.status === 'success') {
-                    const round = data.current_round || 1;
                     document.getElementById('displayRound').innerText = round;
+                    document.querySelectorAll('.current-round-text').forEach(el => el.innerText = round);
 
                     if (data.is_open) {
                         document.getElementById('gongjeForm').style.display = 'block';
                         document.getElementById('waitlistView').style.display = 'none';
                         document.getElementById('fullyClosedView').style.display = 'none';
-                        const deadlineText = document.querySelector('div[style*="color: var(--text-muted)"]');
-                        if (deadlineText) deadlineText.innerHTML = `${round}차분 20세트 한정 선착순 모집 중`;
+                        if (deadlineText) deadlineText.innerHTML = `${round}차분 선착순 모집 중 (20세트 한정)`;
                     } else if (data.is_waitlist_open) {
                         document.getElementById('gongjeForm').style.display = 'none';
                         document.getElementById('waitlistView').style.display = 'block';
@@ -769,9 +768,9 @@
         }
         checkRecruitmentStatus();
 
-        const BASE_PRICE = 74000;
-        const OPT_PI_PRICE = 29900;
-        const OPT_SD_PRICE = 9500;
+        const BASE_PRICE = 94000;
+        const OPT_PI_PRICE = 39900;
+        const OPT_SD_PRICE = 15000;
         const OPT_ADAPTER_PRICE = 9000;
 
         function calculateTotal() {
