@@ -588,9 +588,9 @@
             </div>
 
             <div class="form-group" style="margin-top: 30px;">
-                <label for="quantity">수량 선택</label>
+                <label for="quantity">수량 선택 <span style="font-size: 12px; color: #ffeb3b; font-weight: normal; margin-left: 5px;">(1인당 최대 2세트까지 신청 가능)</span></label>
                 <div style="display: flex; align-items: center; gap: 15px;">
-                    <input type="number" id="quantity" required min="1" value="1" class="calc-trigger"
+                    <input type="number" id="quantity" required min="1" max="2" value="1" class="calc-trigger"
                         style="width: 100px; text-align: center;">
                     <span style="color: var(--text-muted); font-size: 14px;">(기본 키트 94,000원 기준)</span>
                 </div>
@@ -825,6 +825,12 @@
 
         document.getElementById('gongjeForm').addEventListener('submit', function (e) {
             e.preventDefault();
+
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            if (quantity > 2) {
+                alert('최대 신청 가능 수량은 2세트입니다.');
+                return;
+            }
 
             const total = calculateTotal();
             const options = [];
