@@ -902,7 +902,7 @@
             submitBtn.innerText = "전송 중...";
             closeModal();
 
-            fetch('https://cocreate-backend-114168638882.asia-northeast3.run.app/submit_gongje', {
+            fetch(`${API_BASE}/submit_gongje`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(pendingFormData)
