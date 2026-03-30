@@ -316,6 +316,7 @@
             const safeStatus = escapeHtml(item.status);
             const safeTimestamp = escapeHtml(item.timestamp);
             const safeOption = escapeHtml(item.option);
+            const safeAdditionalOption = escapeHtml(item.additional_option);
             const safeTotalPrice = parseInt(item.total_price, 10) || 0;
             const safeTrackingNo = escapeHtml(item.tracking_no);
             const safeAccountInfo = escapeHtml(accountInfo);
@@ -325,7 +326,8 @@
                     <div class="status-badge status-${safeStatus}">${safeStatus}</div>
                     <div style="font-size: 13px; color: #888;">신청일: ${safeTimestamp}</div>
                     <div style="font-size: 16px; font-weight: 700; margin-top: 8px;">${safeOption}</div>
-                    <div style="font-size: 15px; margin-top: 5px;">${safeStatus === '접수완료' ? '결제 예정액' : '입금액'}: <span style="color:#fff; font-weight:700;">${safeTotalPrice.toLocaleString()}원</span></div>
+                    ${safeAdditionalOption && safeAdditionalOption !== '없음' ? `<div style="font-size: 14px; color: #aaa; margin-top: 4px;">추가: ${safeAdditionalOption}</div>` : ''}
+                    <div style="font-size: 15px; margin-top: 8px;">${safeStatus === '접수완료' ? '결제 예정액' : '입금액'}: <span style="color:#fff; font-weight:700;">${safeTotalPrice.toLocaleString()}원</span></div>
                     
                     ${safeTrackingNo ? (function () {
                     // "택배사 번호" 형식 분리 시도
