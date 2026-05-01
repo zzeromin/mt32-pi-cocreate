@@ -698,7 +698,12 @@
 
         async function checkRecruitmentStatus() {
             try {
-                const res = await fetch(`${API_BASE}/get_recruitment_status`);
+                // [히든 링크] URL 파라미터에서 비밀번호 추출
+                const urlParams = new URLSearchParams(window.location.search);
+                const passkey = urlParams.get('pass');
+                
+                const fetchUrl = passkey ? `${API_BASE}/get_recruitment_status?pass=${encodeURIComponent(passkey)}` : `${API_BASE}/get_recruitment_status`;
+                const res = await fetch(fetchUrl);
                 const data = await res.json();
 
                 // 로딩 뷰 숨기기
@@ -713,7 +718,13 @@
                         document.getElementById('waitlistView').style.display = 'none';
                         document.getElementById('fullyClosedView').style.display = 'none';
                         const deadlineText = document.getElementById('deadlineStatus');
-                        if (deadlineText) deadlineText.innerText = `${round}차분 20세트 한정 선착순 모집 중`;
+                        
+                        // [히든 링크] 특별 안내 문구 표시
+                        if (passkey === 'vip3rd') {
+                            if (deadlineText) deadlineText.innerHTML = `<span style="color: #4da6ff; font-weight: 800; font-size: 15px;">[특별 대상자 추가 신청 중]</span><br>신청 완료 후 입금을 서둘러 주세요.`;
+                        } else {
+                            if (deadlineText) deadlineText.innerText = `${round}차분 20세트 한정 선착순 모집 중`;
+                        }
                     } else if (data.is_waitlist_open) {
                         document.getElementById('gongjeForm').style.display = 'none';
                         document.getElementById('waitlistView').style.display = 'block';
@@ -867,6 +878,13 @@
             submitBtn.disabled = true;
             submitBtn.innerText = "전송 중...";
             closeModal();
+
+            // [히든 링크] URL 비밀번호 포함
+            const urlParams = new URLSearchParams(window.location.search);
+            const passkey = urlParams.get('pass');
+            if (passkey) {
+                pendingFormData.pass = passkey;
+            }
 
             fetch('https://cocreate-backend-114168638882.asia-northeast3.run.app/api/ippeosuper/submit_gongje', {
                 method: 'POST',
