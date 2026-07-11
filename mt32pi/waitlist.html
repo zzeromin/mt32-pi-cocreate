@@ -232,8 +232,8 @@
                             <label for="pref_basic" style="font-size:12px; margin-bottom:0; color:#fff;">베이직 키트</label>
                         </div>
                         <div class="checkbox-group" style="margin-bottom:0; background:#2a2a2a; padding:10px;">
-                            <input type="checkbox" id="pref_pi" value="라즈베리파이 제로2WH">
-                            <label for="pref_pi" style="font-size:12px; margin-bottom:0; color:#fff;">라즈베리파이</label>
+                            <input type="checkbox" id="pref_pi" value="라즈베리파이 3A+">
+                            <label for="pref_pi" style="font-size:12px; margin-bottom:0; color:#fff;">라즈베리파이 3A+</label>
                         </div>
                         <div class="checkbox-group" style="margin-bottom:0; background:#2a2a2a; padding:10px;">
                             <input type="checkbox" id="pref_sd" value="SD카드">
@@ -315,7 +315,7 @@
 
             const prefs = [];
             if (document.getElementById('pref_basic').checked) prefs.push("베이직 키트");
-            if (document.getElementById('pref_pi').checked) prefs.push("라즈베리파이");
+            if (document.getElementById('pref_pi').checked) prefs.push("라즈베리파이 3A+");
             if (document.getElementById('pref_sd').checked) prefs.push("SD카드");
             if (document.getElementById('pref_adapter').checked) prefs.push("아답터");
             const preferredOptions = prefs.join(", ") || "없음";

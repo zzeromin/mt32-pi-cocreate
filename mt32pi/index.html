@@ -566,15 +566,15 @@
                     <div class="checkbox-group preview-trigger"
                         style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
                         <input type="checkbox" id="opt_pi" class="calc-trigger">
-                        <label for="opt_pi" style="margin-bottom: 0; color: #fff; flex: 1;">라즈베리파이 제로2WH
-                            (+39,900원)</label>
-                        <img src="pi.png" class="preview-image" alt="라즈베리파이 미리보기">
+                        <label for="opt_pi" style="margin-bottom: 0; color: #fff; flex: 1;">라즈베리파이 3A+
+                            (+43,500원)</label>
+                        <img src="3A+.png" class="preview-image" alt="라즈베리파이 미리보기">
                     </div>
                     <div class="checkbox-group preview-trigger"
                         style="margin-bottom: 10px; background: #2a2a2a; cursor: help;">
                         <input type="checkbox" id="opt_sd" class="calc-trigger">
                         <label for="opt_sd" style="margin-bottom: 0; color: #fff; flex: 1;">샌디스크 SD카드 32GB
-                            (+15,000원)</label>
+                            (+16,000원)</label>
                         <img src="sd.png" class="preview-image" alt="SD 카드 미리보기">
                     </div>
                     <div class="checkbox-group preview-trigger"
@@ -785,8 +785,8 @@
         checkRecruitmentStatus();
 
         const BASE_PRICE = 94000;
-        const OPT_PI_PRICE = 39900;
-        const OPT_SD_PRICE = 15000;
+        const OPT_PI_PRICE = 43500;
+        const OPT_SD_PRICE = 16000;
         const OPT_ADAPTER_PRICE = 9000;
 
         function calculateTotal() {
@@ -848,7 +848,7 @@
 
             const total = calculateTotal();
             const options = [];
-            if (document.getElementById('opt_pi').checked) options.push("라즈베리파이 제로2WH");
+            if (document.getElementById('opt_pi').checked) options.push("라즈베리파이 3A+");
             if (document.getElementById('opt_sd').checked) options.push("샌디스크 SD카드 32GB");
             if (document.getElementById('opt_adapter').checked) options.push("5V 4A 전원 어댑터");
 
